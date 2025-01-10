@@ -2,14 +2,14 @@
 
 Frontend for the Quottery Smart Contract.
 
-We use React and TailwindCSS.
+We use React and MUI.
 
 ## Installation & Running
 
 ```bash
-npm install -g pnpm
-pnpm install
-pnpm start
+npm install -g yarn
+yarn install
+yarn start
 ```
 
 ## License

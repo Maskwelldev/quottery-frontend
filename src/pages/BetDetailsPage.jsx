@@ -81,7 +81,7 @@ function BetDetailsPage() {
   const [bet, setBet] = useState(null);
   const [loading, setLoading] = useState(true);
   const { showSnackbar } = useSnackbar();
-  const [showConfirmTxModal, setShowConfirmTxModal] = useState(false);
+  const [showConfirmTxModal, setShowConfirmTxModal] = useState(true);
   const [selectedOption, setSelectedOption] = useState(null);
   const [amountOfBetSlots, setAmountOfBetSlots] = useState(0);
   const [optionCosts, setOptionCosts] = useState(0n); // BigInt
