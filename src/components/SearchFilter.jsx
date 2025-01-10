@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback } from 'react';
 import {
   Box,
   TextField,
@@ -8,16 +8,16 @@ import {
   useTheme,
   Tooltip,
   Typography,
-} from "@mui/material";
+} from '@mui/material';
 import {
   Search as SearchIcon,
   FilterList as FilterListIcon,
   Clear as ClearIcon,
-} from "@mui/icons-material";
-import { motion } from "framer-motion";
+} from '@mui/icons-material';
+import { motion } from 'framer-motion';
 
 /** ModernDropdown
- *  Reusable dropdown component 
+ *  Reusable dropdown component
  */
 const ModernDropdown = ({ options, selected, onSelect, icon }) => {
   const theme = useTheme();
@@ -36,21 +36,21 @@ const ModernDropdown = ({ options, selected, onSelect, icon }) => {
   );
 
   return (
-    <Box sx={{ position: "relative", width: "100%" }}>
+    <Box sx={{ position: 'relative', width: '100%' }}>
       <Box
         component={motion.div}
         onClick={handleToggle}
         sx={{
-          display: "flex",
-          alignItems: "center",
+          display: 'flex',
+          alignItems: 'center',
           height: 56,
           p: 1.5,
           borderRadius: 3,
-          cursor: "pointer",
+          cursor: 'pointer',
           border: `2px solid ${
             isOpen ? theme.palette.primary.main : theme.palette.divider
           }`,
-          transition: "background-color 0.2s ease, border-color 0.2s ease",
+          transition: 'background-color 0.2s ease, border-color 0.2s ease',
         }}
       >
         {icon &&
@@ -69,7 +69,7 @@ const ModernDropdown = ({ options, selected, onSelect, icon }) => {
             color: isOpen
               ? theme.palette.primary.main
               : theme.palette.text.primary,
-            fontWeight: "bold",
+            fontWeight: 'bold',
           }}
         >
           {options[selected]?.label}
@@ -82,17 +82,17 @@ const ModernDropdown = ({ options, selected, onSelect, icon }) => {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           sx={{
-            position: "absolute",
-            top: "110%",
+            position: 'absolute',
+            top: '110%',
             left: 0,
             right: 0,
             zIndex: 10,
             borderRadius: 3,
             boxShadow: theme.shadows[8],
-            overflow: "hidden",
+            overflow: 'hidden',
             sx: {
-                borderRadius: 3,
-              },
+              borderRadius: 3,
+            },
           }}
         >
           {options.map((option, index) => {
@@ -104,22 +104,19 @@ const ModernDropdown = ({ options, selected, onSelect, icon }) => {
                 onClick={() => handleSelect(index)}
                 sx={{
                   p: 2,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
                   backgroundColor: isSelected
                     ? theme.palette.background.default
                     : theme.palette.background.default,
-                  "&:hover": {
+                  '&:hover': {
                     backgroundColor: theme.palette.background.paper,
                   },
-                  transition: "all 0.2s ease",
+                  transition: 'all 0.2s ease',
                 }}
               >
-                <Typography
-                  variant="body1"
-                  color={theme.palette.text.primary}
-                >
+                <Typography variant="body1" color={theme.palette.text.primary}>
                   {option.label}
                 </Typography>
               </Box>
@@ -144,7 +141,7 @@ const SearchFilter = ({
   const theme = useTheme();
 
   const handleClearSearch = useCallback(() => {
-    onSearchChange("");
+    onSearchChange('');
   }, [onSearchChange]);
 
   return (
@@ -153,7 +150,7 @@ const SearchFilter = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      sx={{ width: "100%" }}
+      sx={{ width: '100%' }}
     >
       <Grid container spacing={3} alignItems="center">
         <Grid item xs={12} md={9}>
@@ -177,7 +174,7 @@ const SearchFilter = ({
                       onClick={handleClearSearch}
                       sx={{
                         color: theme.palette.text.secondary,
-                        "&:hover": {
+                        '&:hover': {
                           color: theme.palette.error.main,
                         },
                       }}
@@ -189,9 +186,9 @@ const SearchFilter = ({
               ),
               sx: {
                 borderRadius: 3,
-                "& .MuiOutlinedInput-notchedOutline": {
+                '& .MuiOutlinedInput-notchedOutline': {
                   borderColor:
-                    theme.palette.mode === "dark"
+                    theme.palette.mode === 'dark'
                       ? theme.palette.divider
                       : theme.palette.divider,
                   borderWidth: 2,

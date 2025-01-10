@@ -1,88 +1,109 @@
-import React, {useEffect, useState} from 'react'
-import {useNavigate, useParams} from 'react-router-dom'
-import {useQuotteryContext} from '../contexts/QuotteryContext'
-import {useQubicConnect} from '../components/qubic/connect/QubicConnectContext'
-import ConfirmTxModal from '../components/qubic/connect/ConfirmTxModal'
-import Card from '@mui/material/Card'
-import {formatDate} from '../components/qubic/util/commons'
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useQuotteryContext } from '../contexts/QuotteryContext';
+import { useQubicConnect } from '../components/qubic/connect/QubicConnectContext';
+import ConfirmTxModal from '../components/qubic/connect/ConfirmTxModal';
+import Card from '@mui/material/Card';
+import { formatDate } from '../components/qubic/util/commons';
 
 const BetPublishPage = () => {
-  const {id} = useParams()
-  const {state, fetchBets, signPublishResultTx, walletPublicIdentity} = useQuotteryContext()
-  const {connected, toggleConnectModal} = useQubicConnect()
-  const [bet, setBet] = useState(null)
-  const [selectedOption, setSelectedOption] = useState(null)
-  const [showConfirmTxModal, setShowConfirmTxModal] = useState(false)
-  const navigate = useNavigate()
-  const [isOracleProvider, setIsOracleProvider] = useState(false)
-  const [isAfterEndDate, setIsAfterEndDate] = useState(false)
-  const [hasEnoughParticipants, setHasEnoughParticipants] = useState(false)
-  const [hasAlreadyPublished, setHasAlreadyPublished] = useState(false)
-  const [canPublish, setCanPublish] = useState(false)
+  const { id } = useParams();
+  const { state, fetchBets, signPublishResultTx, walletPublicIdentity } =
+    useQuotteryContext();
+  const { connected, toggleConnectModal } = useQubicConnect();
+  const [bet, setBet] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [showConfirmTxModal, setShowConfirmTxModal] = useState(false);
+  const navigate = useNavigate();
+  const [isOracleProvider, setIsOracleProvider] = useState(false);
+  const [isAfterEndDate, setIsAfterEndDate] = useState(false);
+  const [hasEnoughParticipants, setHasEnoughParticipants] = useState(false);
+  const [hasAlreadyPublished, setHasAlreadyPublished] = useState(false);
+  const [canPublish, setCanPublish] = useState(false);
 
   useEffect(() => {
     const fetchBetAndCheckConditions = async () => {
       if (!connected || !walletPublicIdentity) {
-        toggleConnectModal()
-        return
+        toggleConnectModal();
+        return;
       }
 
-      const bets = [...state.activeBets, ...state.lockedBets, ...state.waitingForResultsBets, ...state.historicalBets]
+      const bets = [
+        ...state.activeBets,
+        ...state.lockedBets,
+        ...state.waitingForResultsBets,
+        ...state.historicalBets,
+      ];
 
-      const betDetails = bets.find((b) => b.bet_id === parseInt(id))
+      const betDetails = bets.find((b) => b.bet_id === parseInt(id));
       if (betDetails) {
-        setBet(betDetails)
+        setBet(betDetails);
 
         // Check if user is an Oracle Provider
-        const isProvider = betDetails.oracle_id.includes(walletPublicIdentity)
-        setIsOracleProvider(isProvider)
+        const isProvider = betDetails.oracle_id.includes(walletPublicIdentity);
+        setIsOracleProvider(isProvider);
 
         if (!isProvider) {
-          alert('You are not authorized to publish the result of this bet.')
-          navigate('/')
-          return
+          alert('You are not authorized to publish the result of this bet.');
+          navigate('/');
+          return;
         }
 
         // Check if current date exceeds bet's end date
-        const endDateTime = new Date('20' + betDetails.end_date + 'T' + betDetails.end_time + 'Z')
-        const now = new Date()
-        const afterEndDate = now > endDateTime
-        setIsAfterEndDate(afterEndDate)
+        const endDateTime = new Date(
+          '20' + betDetails.end_date + 'T' + betDetails.end_time + 'Z'
+        );
+        const now = new Date();
+        const afterEndDate = now > endDateTime;
+        setIsAfterEndDate(afterEndDate);
 
         // Check if at least one option has been joined
-        const numOptionsJoined = betDetails.current_num_selection.filter(num => num > 0).length
-        const enoughParticipants = numOptionsJoined >= 1
-        setHasEnoughParticipants(enoughParticipants)
+        const numOptionsJoined = betDetails.current_num_selection.filter(
+          (num) => num > 0
+        ).length;
+        const enoughParticipants = numOptionsJoined >= 1;
+        setHasEnoughParticipants(enoughParticipants);
 
         // Check if the Oracle Provider has already published
-        const betResultOPId = betDetails.betResultOPId || []
+        const betResultOPId = betDetails.betResultOPId || [];
 
         // Get indices of Oracles who have published
-        const publishedOracleIndices = betResultOPId.filter(value => value !== -1)
+        const publishedOracleIndices = betResultOPId.filter(
+          (value) => value !== -1
+        );
 
         // Map indices to Oracle IDs
-        const votedOracles = publishedOracleIndices.map(index => betDetails.oracle_id[index])
+        const votedOracles = publishedOracleIndices.map(
+          (index) => betDetails.oracle_id[index]
+        );
 
-        const hasPublished = votedOracles.includes(walletPublicIdentity)
-        setHasAlreadyPublished(hasPublished)
+        const hasPublished = votedOracles.includes(walletPublicIdentity);
+        setHasAlreadyPublished(hasPublished);
 
         // Determine if the user can publish
-        setCanPublish(afterEndDate && enoughParticipants && !hasPublished)
+        setCanPublish(afterEndDate && enoughParticipants && !hasPublished);
       } else {
-        await fetchBets('all')
+        await fetchBets('all');
       }
-    }
+    };
 
-    fetchBetAndCheckConditions()
-  }, [id, state, walletPublicIdentity, connected, navigate, toggleConnectModal])
+    fetchBetAndCheckConditions();
+  }, [
+    id,
+    state,
+    walletPublicIdentity,
+    connected,
+    navigate,
+    toggleConnectModal,
+  ]);
 
   const handlePublish = async () => {
     if (!connected) {
-      toggleConnectModal()
-      return
+      toggleConnectModal();
+      return;
     }
-    setShowConfirmTxModal(true)
-  }
+    setShowConfirmTxModal(true);
+  };
 
   return (
     <div className="mt-[90px] sm:px-30 md:px-130">
@@ -92,21 +113,26 @@ const BetPublishPage = () => {
           <>
             {!isAfterEndDate && (
               <p className="text-gray-50 mt-4">
-                Publish bet (please come back after {formatDate(bet.end_date)}{' '}{bet.end_time} UTC)
+                Publish bet (please come back after {formatDate(bet.end_date)}{' '}
+                {bet.end_time} UTC)
               </p>
             )}
             {isAfterEndDate && !hasEnoughParticipants && (
-              <p className="text-gray-50 mt-4">Publish bet (not enough parties joined the bet)</p>
+              <p className="text-gray-50 mt-4">
+                Publish bet (not enough parties joined the bet)
+              </p>
             )}
             {isAfterEndDate && hasEnoughParticipants && hasAlreadyPublished && (
-              <p className="text-gray-50 mt-4">Publish bet (already published)</p>
+              <p className="text-gray-50 mt-4">
+                Publish bet (already published)
+              </p>
             )}
             {canPublish && (
               <>
                 <Card className="p-[24px] w-full mt-[16px]">
-                  <h2 className="text-xl text-white">{
-                    bet.full_description ? bet.full_description : bet.bet_desc
-                  }</h2>
+                  <h2 className="text-xl text-white">
+                    {bet.full_description ? bet.full_description : bet.bet_desc}
+                  </h2>
                   <p className="text-gray-50">Bet ID: {bet.bet_id}</p>
                 </Card>
                 <div className="mt-4">
@@ -140,19 +166,19 @@ const BetPublishPage = () => {
       <ConfirmTxModal
         open={showConfirmTxModal}
         onClose={() => {
-          setShowConfirmTxModal(false)
-          navigate('/')
+          setShowConfirmTxModal(false);
+          navigate('/');
         }}
         tx={{
           title: 'Publish Result',
           description: 'Are you sure you want to publish this result?',
         }}
         onConfirm={async () => {
-          return await signPublishResultTx(bet.bet_id, selectedOption)
+          return await signPublishResultTx(bet.bet_id, selectedOption);
         }}
       />
     </div>
-  )
-}
+  );
+};
 
-export default BetPublishPage
+export default BetPublishPage;

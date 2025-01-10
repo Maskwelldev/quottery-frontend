@@ -10,7 +10,7 @@ html {
   flex: 1;
 }
 
-.date-input-wrapper input[type="date"] {
+.date-input-wrapper input[type='date'] {
   width: 100%;
   padding-right: 5px;
   padding-left: 5px;

@@ -30,9 +30,7 @@ const Header = () => {
       : 'rgba(255, 255, 255, 0.95)',
     backdropFilter: 'blur(12px)',
     WebkitBackdropFilter: 'blur(12px)',
-    boxShadow: scrollTrigger 
-      ? '0 8px 32px rgba(0, 0, 0, 0.12)'
-      : 'none',
+    boxShadow: scrollTrigger ? '0 8px 32px rgba(0, 0, 0, 0.12)' : 'none',
     position: 'fixed',
     top: 0,
     left: 0,
@@ -75,10 +73,7 @@ const Header = () => {
 
           <Box display="flex" alignItems="center" gap={2}>
             <ConnectLink />
-            <IconButton 
-              onClick={toggleTheme} 
-              color="inherit"
-            >
+            <IconButton onClick={toggleTheme} color="inherit">
               {isDarkMode ? <Brightness7 /> : <Brightness4 />}
             </IconButton>
           </Box>

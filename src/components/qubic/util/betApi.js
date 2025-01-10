@@ -1,16 +1,16 @@
 /* global BigInt */
-import {Buffer} from 'buffer';
+import { Buffer } from 'buffer';
 import base64 from 'base-64';
-import {HEADERS, makeJsonData, QTRY_CONTRACT_INDEX} from './commons';
-import {QubicHelper} from '@qubic-lib/qubic-ts-library/dist/qubicHelper'
-import {externalJsonAssetUrl, debuglog} from './commons'
-import {hashBetData} from "./hashUtils"
+import { HEADERS, makeJsonData, QTRY_CONTRACT_INDEX } from './commons';
+import { QubicHelper } from '@qubic-lib/qubic-ts-library/dist/qubicHelper';
+import { externalJsonAssetUrl, debuglog } from './commons';
+import { hashBetData } from './hashUtils';
 
 // Get Node's info using qubic-http's API
 export const fetchNodeInfo = async (httpEndpoint, backendUrl) => {
   try {
-    const jsonData = makeJsonData(QTRY_CONTRACT_INDEX, 1, 0, "");
-    const query_smart_contract_api_uri = `${httpEndpoint}/v1/querySmartContract`
+    const jsonData = makeJsonData(QTRY_CONTRACT_INDEX, 1, 0, '');
+    const query_smart_contract_api_uri = `${httpEndpoint}/v1/querySmartContract`;
 
     const response = await fetch(query_smart_contract_api_uri, {
       method: 'POST',
@@ -20,7 +20,9 @@ export const fetchNodeInfo = async (httpEndpoint, backendUrl) => {
 
     // Check if the response is not ok (status is not 200-299)
     if (!response.ok) {
-      throw new Error(`Error fetching node info: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Error fetching node info: ${response.status} ${response.statusText}`
+      );
     }
 
     const responseData = await response.json();
@@ -70,7 +72,6 @@ export const fetchNodeInfo = async (httpEndpoint, backendUrl) => {
       burned_amount: Number(burnedAmount),
       game_operator: gameOperatorBytes,
     };
-
   } catch (error) {
     console.error('Error in fetchNodeInfo:', error.message);
     console.log('Falling back to old API for node info.');
@@ -86,12 +87,14 @@ export const fetchNodeInfo = async (httpEndpoint, backendUrl) => {
         throw new Error('Node info not found in old API response');
       }
     } catch (fallbackError) {
-      console.error('Error fetching node info from old API:', fallbackError.message);
+      console.error(
+        'Error fetching node info from old API:',
+        fallbackError.message
+      );
       throw fallbackError; // Re-throwing the error for handling later in the caller
     }
   }
 };
-
 
 // Fetch bets considered "active" by Quottery core (not reached end dates)
 // In the frontend/UI, "active" bets haven't reached close dates,
@@ -99,14 +102,13 @@ export const fetchNodeInfo = async (httpEndpoint, backendUrl) => {
 // This function retrieves Quottery core active bet IDs using the qubic-http API.
 export const fetchActiveBets = async (httpEndpoint) => {
   const json_data = makeJsonData(QTRY_CONTRACT_INDEX, 4, 0, '');
-  const query_smart_contract_api_uri = `${httpEndpoint}/v1/querySmartContract`
+  const query_smart_contract_api_uri = `${httpEndpoint}/v1/querySmartContract`;
 
   const response = await fetch(query_smart_contract_api_uri, {
     method: 'POST',
     headers: HEADERS,
     body: JSON.stringify(json_data),
   });
-
 
   const responseData = await response.json();
   const data = base64.decode(responseData.responseData);
@@ -126,12 +128,13 @@ export const fetchActiveBets = async (httpEndpoint) => {
   return activeBetIds;
 };
 
-
 const parseFixedSizeStrings = (buffer, start, length, count, itemSize) => {
   // const items_ = [length];
   const items = [];
   for (let i = 0; i < count; i++) {
-    const str = buffer.slice(start + i * itemSize, start + (i + 1) * itemSize).toString('utf-8');
+    const str = buffer
+      .slice(start + i * itemSize, start + (i + 1) * itemSize)
+      .toString('utf-8');
     items.push(str.replace(/\0/g, '')); // Remove null characters and trim whitespace
   }
   return items;
@@ -139,25 +142,30 @@ const parseFixedSizeStrings = (buffer, start, length, count, itemSize) => {
 
 // Function to unpack Quottery date
 const unpackQuotteryDate = (data) => {
-  const year = ((data >> 26) & 0x3F) + 24;
-  const month = (data >> 22) & 0x0F;
-  const day = (data >> 17) & 0x1F;
-  const hour = (data >> 12) & 0x1F;
-  const minute = (data >> 6) & 0x3F;
-  const second = data & 0x3F;
+  const year = ((data >> 26) & 0x3f) + 24;
+  const month = (data >> 22) & 0x0f;
+  const day = (data >> 17) & 0x1f;
+  const hour = (data >> 12) & 0x1f;
+  const minute = (data >> 6) & 0x3f;
+  const second = data & 0x3f;
 
-  return {year, month, day, hour, minute, second};
-}
+  return { year, month, day, hour, minute, second };
+};
 
 const calculateBettingOdds = (currentNumSelection) => {
-  const totalSelections = currentNumSelection.reduce((acc, val) => acc + val, 0);
+  const totalSelections = currentNumSelection.reduce(
+    (acc, val) => acc + val,
+    0
+  );
 
   // Initialize betting_odds as an array of "1.0"
-  let betting_odds = Array(currentNumSelection.length).fill("1.0");
+  let betting_odds = Array(currentNumSelection.length).fill('1.0');
 
   if (totalSelections > 0) {
-    betting_odds = currentNumSelection.map(selection =>
-      selection > 0 ? (totalSelections / selection).toString() : totalSelections.toString()
+    betting_odds = currentNumSelection.map((selection) =>
+      selection > 0
+        ? (totalSelections / selection).toString()
+        : totalSelections.toString()
     );
   }
 
@@ -175,7 +183,7 @@ const formatQuotteryDate = (dateObj) => {
   // Format the date and time similar to the old API structure
   return {
     date: `${year}-${month}-${day}`,
-    time: `${hour}:${minute}:00`
+    time: `${hour}:${minute}:00`,
   };
 };
 
@@ -183,128 +191,152 @@ const bufferToUint8Array = (buffer) => {
   return new Uint8Array(buffer);
 };
 
-export const fetchBetDetail = async (httpEndpoint, backendUrl, betId, coreNodeBetIds) => {
+export const fetchBetDetail = async (
+  httpEndpoint,
+  backendUrl,
+  betId,
+  coreNodeBetIds
+) => {
   if (coreNodeBetIds.includes(betId)) {
     // Bet is in core node, use qubic-http API
-    const bet = await fetchBetDetailFromCoreNode(httpEndpoint, betId)
-    await fetchAndVerifyBetDescription(bet)
-    return bet
+    const bet = await fetchBetDetailFromCoreNode(httpEndpoint, betId);
+    await fetchAndVerifyBetDescription(bet);
+    return bet;
   } else {
     // Bet is not in core node, use the old backend API to fetch from historical database
-    const bet = await fetchBetDetailFromBackendApi(backendUrl, betId)
-    await fetchAndVerifyBetDescription(bet)
-    return bet
+    const bet = await fetchBetDetailFromBackendApi(backendUrl, betId);
+    await fetchAndVerifyBetDescription(bet);
+    return bet;
   }
-}
+};
 
 export const fetchAndVerifyBetDescription = async (bet) => {
-  const isNewFormat = bet.bet_desc.startsWith('###')
+  const isNewFormat = bet.bet_desc.startsWith('###');
 
   if (isNewFormat) {
-    const qHelper = new QubicHelper()
-    const encodedHash = bet.bet_desc.substring(3)
-    const url = `${externalJsonAssetUrl}/bet_external_asset/${encodedHash}`
+    const qHelper = new QubicHelper();
+    const encodedHash = bet.bet_desc.substring(3);
+    const url = `${externalJsonAssetUrl}/bet_external_asset/${encodedHash}`;
 
     try {
-      const response = await fetch(url)
+      const response = await fetch(url);
       if (!response.ok) {
-        throw new Error('Network response was not ok')
+        throw new Error('Network response was not ok');
       }
-      const data = await response.json()
+      const data = await response.json();
 
-      const oracleIdentities = bet.oracle_id[0] instanceof Uint8Array ? await Promise.all(
-        bet.oracle_id.map(async (p) => {
-          return await qHelper.getIdentity(p)
-        })
-      ) : bet.oracle_id
+      const oracleIdentities =
+        bet.oracle_id[0] instanceof Uint8Array
+          ? await Promise.all(
+              bet.oracle_id.map(async (p) => {
+                return await qHelper.getIdentity(p);
+              })
+            )
+          : bet.oracle_id;
 
-      const creator = bet.creator instanceof Uint8Array ? await qHelper.getIdentity(bet.creator) : bet.creator
-      const firstPartHash = await hashBetData(data.description,
+      const creator =
+        bet.creator instanceof Uint8Array
+          ? await qHelper.getIdentity(bet.creator)
+          : bet.creator;
+      const firstPartHash = await hashBetData(
+        data.description,
         creator,
         oracleIdentities,
-        bet.option_desc,)
+        bet.option_desc
+      );
 
       // Remove the unique identifier
-      const encodedHashFirst = encodedHash.substring(0, 23)
+      const encodedHashFirst = encodedHash.substring(0, 23);
 
-      debuglog('firstPartHash:', firstPartHash, 'encodedHashFirst:', encodedHashFirst)
+      debuglog(
+        'firstPartHash:',
+        firstPartHash,
+        'encodedHashFirst:',
+        encodedHashFirst
+      );
 
       // Compare the hashes
       if (firstPartHash !== encodedHashFirst) {
-        throw new Error('Description hash does not match expected hash')
+        throw new Error('Description hash does not match expected hash');
       } else {
-        debuglog('Hash verified successfully!')
+        debuglog('Hash verified successfully!');
       }
 
-      bet.full_description = data.description
-      bet.bet_desc = bet.full_description
+      bet.full_description = data.description;
+      bet.bet_desc = bet.full_description;
     } catch (error) {
-      console.error('Error fetching or verifying full description:', error)
-      bet.full_description = 'Description not available.'
-      bet.description = bet.full_description
+      console.error('Error fetching or verifying full description:', error);
+      bet.full_description = 'Description not available.';
+      bet.description = bet.full_description;
     }
   } else {
     // Old format; use bet_desc as is
     bet.full_description = bet.bet_desc;
   }
-}
+};
 
 export const fetchBetDetailFromBackendApi = async (backendUrl, betId) => {
   try {
-    const response = await fetch(`${backendUrl}/get_all_bets`)
-    const data = await response.json()
+    const response = await fetch(`${backendUrl}/get_all_bets`);
+    const data = await response.json();
 
     if (data.bet_list) {
-      const bet = data.bet_list.find((b) => b.bet_id === betId)
+      const bet = data.bet_list.find((b) => b.bet_id === betId);
 
       if (bet) {
         // Parse list fields using JSON.parse
-        bet.oracle_fee = JSON.parse(bet.oracle_fee)
-        bet.oracle_id = JSON.parse(bet.oracle_id)
-        bet.option_desc = JSON.parse(bet.option_desc)
-        bet.betting_odds = JSON.parse(bet.betting_odds)
-        bet.current_bet_state = JSON.parse(bet.current_bet_state)
-        bet.current_num_selection = JSON.parse(bet.current_num_selection)
-        bet.oracle_vote = JSON.parse(bet.oracle_vote)
+        bet.oracle_fee = JSON.parse(bet.oracle_fee);
+        bet.oracle_id = JSON.parse(bet.oracle_id);
+        bet.option_desc = JSON.parse(bet.option_desc);
+        bet.betting_odds = JSON.parse(bet.betting_odds);
+        bet.current_bet_state = JSON.parse(bet.current_bet_state);
+        bet.current_num_selection = JSON.parse(bet.current_num_selection);
+        bet.oracle_vote = JSON.parse(bet.oracle_vote);
 
-        const closeDate = new Date('20' + bet.close_date + 'T' + bet.close_time + 'Z')
-        const now = new Date()
-        bet.is_active = now <= closeDate
+        const closeDate = new Date(
+          '20' + bet.close_date + 'T' + bet.close_time + 'Z'
+        );
+        const now = new Date();
+        bet.is_active = now <= closeDate;
 
         // Normalize field names to match new API :-)
-        bet.nOption = bet.no_options || bet.nOption
-        bet.maxBetSlotPerOption = bet.max_slot_per_option || bet.maxBetSlotPerOption
-        bet.amount_per_bet_slot = BigInt(bet.amount_per_bet_slot)
-        bet.bet_id = parseInt(bet.bet_id)
-        bet.current_total_qus = parseInt(bet.current_total_qus)
-        bet.amount_per_bet_slot = BigInt(bet.amount_per_bet_slot)
+        bet.nOption = bet.no_options || bet.nOption;
+        bet.maxBetSlotPerOption =
+          bet.max_slot_per_option || bet.maxBetSlotPerOption;
+        bet.amount_per_bet_slot = BigInt(bet.amount_per_bet_slot);
+        bet.bet_id = parseInt(bet.bet_id);
+        bet.current_total_qus = parseInt(bet.current_total_qus);
+        bet.amount_per_bet_slot = BigInt(bet.amount_per_bet_slot);
 
         // For consistency, set oracle_public_keys to null (since we don't have them)
-        bet.oracle_public_keys = null
+        bet.oracle_public_keys = null;
 
-        return bet
+        return bet;
       } else {
-        throw new Error(`Bet with id ${betId} not found in backend API.`)
+        throw new Error(`Bet with id ${betId} not found in backend API.`);
       }
     } else {
-      throw new Error('No bet_list in backend API response.')
+      throw new Error('No bet_list in backend API response.');
     }
   } catch (error) {
-    console.error('Error fetching bet detail from backend API:', error)
-    throw error
+    console.error('Error fetching bet detail from backend API:', error);
+    throw error;
   }
-}
+};
 
 // Function to fetch details of a specific bet given the bet id
-export const fetchBetDetailFromCoreNode = async (httpEndpoint, betId, maxRetryCount = 3) => {
+export const fetchBetDetailFromCoreNode = async (
+  httpEndpoint,
+  betId,
+  maxRetryCount = 3
+) => {
   const betIdBuffer = Buffer.alloc(4);
   betIdBuffer.writeUInt32LE(betId, 0);
-  const inputBase64 = Buffer.from(betIdBuffer).toString('base64')
-  const query_smart_contract_api_uri = `${httpEndpoint}/v1/querySmartContract`
-
+  const inputBase64 = Buffer.from(betIdBuffer).toString('base64');
+  const query_smart_contract_api_uri = `${httpEndpoint}/v1/querySmartContract`;
 
   const json_data = makeJsonData(QTRY_CONTRACT_INDEX, 2, 4, inputBase64);
-  let retry = 0
+  let retry = 0;
   for (let attempt = 0; attempt < maxRetryCount; attempt++) {
     try {
       const response = await fetch(query_smart_contract_api_uri, {
@@ -314,7 +346,9 @@ export const fetchBetDetailFromCoreNode = async (httpEndpoint, betId, maxRetryCo
       });
 
       if (!response.ok) {
-        throw new Error(`Error fetching bet details: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Error fetching bet details: ${response.status} ${response.statusText}`
+        );
       }
 
       const responseData = await response.json();
@@ -341,33 +375,44 @@ export const fetchBetDetailFromCoreNode = async (httpEndpoint, betId, maxRetryCo
         const end = start + 32;
         const idBuffer = buffer.slice(start, end);
         // Check if the idBuffer is not all zeros (empty)
-        const isEmpty = idBuffer.every(byte => byte === 0);
+        const isEmpty = idBuffer.every((byte) => byte === 0);
         if (!isEmpty) {
           const idUint8Array = bufferToUint8Array(idBuffer);
           oracleProviderId.push(idUint8Array);
         }
       }
 
-      const oracleFees = Array.from({length: oracleProviderId.length}, (_, i) => buffer.readUInt32LE(584 + i * 4) / 100);
-      const currentNumSelection = Array.from({length: nOption}, (_, i) => buffer.readUInt32LE(644 + i * 4));
+      const oracleFees = Array.from(
+        { length: oracleProviderId.length },
+        (_, i) => buffer.readUInt32LE(584 + i * 4) / 100
+      );
+      const currentNumSelection = Array.from({ length: nOption }, (_, i) =>
+        buffer.readUInt32LE(644 + i * 4)
+      );
 
       const bettingOdds = calculateBettingOdds(currentNumSelection);
 
       // Calculate result based on oracle votes
-      const betResultWonOption = Array.from({length: oracleProviderId.length}, (_, i) => buffer.readInt8(676 + i))
-      const betResultOPId = Array.from({length: oracleProviderId.length}, (_, i) => buffer.readInt8(684 + i));
+      const betResultWonOption = Array.from(
+        { length: oracleProviderId.length },
+        (_, i) => buffer.readInt8(676 + i)
+      );
+      const betResultOPId = Array.from(
+        { length: oracleProviderId.length },
+        (_, i) => buffer.readInt8(684 + i)
+      );
 
       let result = -1;
       if (oracleProviderId.length > 0) {
-        const requiredVotes = Math.ceil(oracleProviderId.length * 2 / 3);
+        const requiredVotes = Math.ceil((oracleProviderId.length * 2) / 3);
         const voteCount = new Map();
 
         // Count votes
         for (let i = 0; i < betResultOPId.length; i++) {
-          const oracleIdx = betResultOPId[i]
-          const optionVoted = betResultWonOption[i]
+          const oracleIdx = betResultOPId[i];
+          const optionVoted = betResultWonOption[i];
           if (oracleIdx !== -1 && optionVoted !== -1) {
-            voteCount.set(optionVoted, (voteCount.get(optionVoted) || 0) + 1)
+            voteCount.set(optionVoted, (voteCount.get(optionVoted) || 0) + 1);
           }
         }
 
@@ -388,8 +433,8 @@ export const fetchBetDetailFromCoreNode = async (httpEndpoint, betId, maxRetryCo
       }
 
       if (retry !== 0) {
-        console.log('Done retrying')
-        retry = 0
+        console.log('Done retrying');
+        retry = 0;
       }
 
       // Return unpacked bet details
@@ -397,8 +442,14 @@ export const fetchBetDetailFromCoreNode = async (httpEndpoint, betId, maxRetryCo
         bet_id: buffer.readUInt32LE(0), // Read uint32 betId
         nOption: nOption, // Read uint32 nOption
         creator: creator,
-        bet_desc: buffer.slice(40, 72).toString('utf-8').replace(/\0/g, '').trim(), // Read and clean 32-byte bet description
-        option_desc: parseFixedSizeStrings(buffer, 72, 256, 8, 32).filter(id => id.length > 0), // Parse 8x 32-byte option descriptions
+        bet_desc: buffer
+          .slice(40, 72)
+          .toString('utf-8')
+          .replace(/\0/g, '')
+          .trim(), // Read and clean 32-byte bet description
+        option_desc: parseFixedSizeStrings(buffer, 72, 256, 8, 32).filter(
+          (id) => id.length > 0
+        ), // Parse 8x 32-byte option descriptions
         oracle_id: oracleProviderId,
         oracle_fee: oracleFees,
         open_date: openDate.date,
@@ -413,26 +464,35 @@ export const fetchBetDetailFromCoreNode = async (httpEndpoint, betId, maxRetryCo
         current_num_selection: currentNumSelection,
         betResultWonOption: betResultWonOption,
         betResultOPId: betResultOPId,
-        current_total_qus: currentNumSelection.reduce((acc, val) => acc + val, 0) * Number(amountPerBetSlot),
+        current_total_qus:
+          currentNumSelection.reduce((acc, val) => acc + val, 0) *
+          Number(amountPerBetSlot),
         betting_odds: bettingOdds,
-        result: result
+        result: result,
       };
-
     } catch (error) {
-      console.error(`Attempt ${attempt + 1}: Error fetching bet details for betId ${betId} - ${error.message}`);
+      console.error(
+        `Attempt ${
+          attempt + 1
+        }: Error fetching bet details for betId ${betId} - ${error.message}`
+      );
 
       if (attempt === maxRetryCount - 1) {
         console.error('Max retry attempts reached. Failing gracefully.');
-        throw error;  // Re-throw the error after the final attempt
+        throw error; // Re-throw the error after the final attempt
       }
 
       console.log('Retrying...');
-      retry++
+      retry++;
     }
   }
 };
 
-export const fetchParticipantsForBetOption = async (httpEndpoint, betId, optionId) => {
+export const fetchParticipantsForBetOption = async (
+  httpEndpoint,
+  betId,
+  optionId
+) => {
   // Prepare the payload (8 bytes = 4 for betId, 4 for optionId)
   const buffer = Buffer.alloc(8);
   buffer.writeUInt32LE(betId, 0);
@@ -450,7 +510,9 @@ export const fetchParticipantsForBetOption = async (httpEndpoint, betId, optionI
   });
 
   if (!response.ok) {
-    throw new Error(`Erreur fetchParticipantsForBetOption: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `Erreur fetchParticipantsForBetOption: ${response.status} ${response.statusText}`
+    );
   }
 
   const responseData = await response.json();
@@ -477,9 +539,9 @@ export const fetchParticipantsForBetOption = async (httpEndpoint, betId, optionI
     const identity = await qHelper.getIdentity(pubKeyBytes);
 
     participants.push({
-      identity,              // ex: "Q_ID_xxx"
+      identity, // ex: "Q_ID_xxx"
       publicKeyBytes: pubKeyBytes,
-      slotCount: slotCount,  // BigInt
+      slotCount: slotCount, // BigInt
     });
   }
 
@@ -494,7 +556,11 @@ export const fetchParticipantsForBetOption = async (httpEndpoint, betId, optionI
  * @param {string} publicId - The public ID of the user.
  * @return {Promise<Array>} - A list of bets with participation details.
  */
-export const fetchBetsForParticipant = async (httpEndpoint, backendUrl, publicId) => {
+export const fetchBetsForParticipant = async (
+  httpEndpoint,
+  backendUrl,
+  publicId
+) => {
   try {
     // Step 1: Fetch all active bets
     const activeBetIds = await fetchActiveBets(httpEndpoint);
@@ -503,13 +569,24 @@ export const fetchBetsForParticipant = async (httpEndpoint, backendUrl, publicId
 
     // Step 2: Check each bet for participant's involvement
     for (const betId of activeBetIds) {
-      const betDetail = await fetchBetDetail(httpEndpoint, backendUrl, betId, activeBetIds);
+      const betDetail = await fetchBetDetail(
+        httpEndpoint,
+        backendUrl,
+        betId,
+        activeBetIds
+      );
 
       for (let i = 0; i < betDetail.option_desc.length; i++) {
-        const participants = await fetchParticipantsForBetOption(httpEndpoint, betId, i);
+        const participants = await fetchParticipantsForBetOption(
+          httpEndpoint,
+          betId,
+          i
+        );
 
         // Check if publicId is in participants
-        const isParticipant = participants.some(participant => participant.identity === publicId);
+        const isParticipant = participants.some(
+          (participant) => participant.identity === publicId
+        );
 
         if (isParticipant) {
           betsWithParticipation.push({

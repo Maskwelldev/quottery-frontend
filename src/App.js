@@ -23,22 +23,23 @@ function App() {
       <ConfigProvider>
         <QubicConnectProvider>
           <QuotteryProvider>
-          <SnackbarProvider>
-            <BrowserRouter>
-              <Header />
-              <Box component="main" >
-                <Routes>/
-                  <Route path="/" element={<StartPage />} />
-                  <Route path="/bet/:id" element={<BetDetailsPage />} />
-                  <Route path="/create" element={<BetCreatePage />} />
-                  <Route path="/publish/:id" element={<BetPublishPage />} />
-                  <Route path="/user-bets" element={<UserBets />} />
-                </Routes>
-              </Box>
-              {/* <RandomBetsTicker /> */}
-              <Footer />
-            </BrowserRouter>
-          </SnackbarProvider>
+            <SnackbarProvider>
+              <BrowserRouter>
+                <Header />
+                <Box component="main">
+                  <Routes>
+                    /
+                    <Route path="/" element={<StartPage />} />
+                    <Route path="/bet/:id" element={<BetDetailsPage />} />
+                    <Route path="/create" element={<BetCreatePage />} />
+                    <Route path="/publish/:id" element={<BetPublishPage />} />
+                    <Route path="/user-bets" element={<UserBets />} />
+                  </Routes>
+                </Box>
+                {/* <RandomBetsTicker /> */}
+                <Footer />
+              </BrowserRouter>
+            </SnackbarProvider>
           </QuotteryProvider>
         </QubicConnectProvider>
       </ConfigProvider>

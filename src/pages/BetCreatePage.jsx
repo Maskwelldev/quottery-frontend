@@ -1,7 +1,7 @@
 /* global BigInt */
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSnackbar } from "../contexts/SnackbarContext";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from '../contexts/SnackbarContext';
 import {
   Box,
   Container,
@@ -17,42 +17,40 @@ import {
   Alert,
   AlertTitle,
   useTheme,
-} from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
-import Close from "@mui/icons-material/Close";
-import InfoOutlined from "@mui/icons-material/InfoOutlined";
-import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
-import ConfirmTxModal from "../components/qubic/connect/ConfirmTxModal";
-import { useQubicConnect } from "../components/qubic/connect/QubicConnectContext";
-import BetCreateConfirm from "../components/BetCreateConfirm";
-import { useQuotteryContext } from "../contexts/QuotteryContext";
-import { QubicHelper } from "@qubic-lib/qubic-ts-library/dist/qubicHelper";
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
+import Close from '@mui/icons-material/Close';
+import InfoOutlined from '@mui/icons-material/InfoOutlined';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import ConfirmTxModal from '../components/qubic/connect/ConfirmTxModal';
+import { useQubicConnect } from '../components/qubic/connect/QubicConnectContext';
+import BetCreateConfirm from '../components/BetCreateConfirm';
+import { useQuotteryContext } from '../contexts/QuotteryContext';
+import { QubicHelper } from '@qubic-lib/qubic-ts-library/dist/qubicHelper';
 import {
   hashBetData,
   hashUniqueData,
-} from "../components/qubic/util/hashUtils";
-import { formatQubicAmount } from "../components/qubic/util";
-import { externalJsonAssetUrl } from "../components/qubic/util/commons";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker, TimePicker } from "@mui/x-date-pickers";
-import dayjs from "dayjs";
+} from '../components/qubic/util/hashUtils';
+import { formatQubicAmount } from '../components/qubic/util';
+import { externalJsonAssetUrl } from '../components/qubic/util/commons';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker, TimePicker } from '@mui/x-date-pickers';
+import dayjs from 'dayjs';
 
 function LabelWithPopover({ label, description, required = false }) {
   const theme = useTheme();
   return (
     <Box display="flex" alignItems="center" gap={1} mb={0.5}>
       <Typography variant="subtitle1" fontWeight="bold">
-        {label}{" "}
-        {required && (
-          <span style={{ color: theme.palette.error.main }}>*</span>
-        )}
+        {label}{' '}
+        {required && <span style={{ color: theme.palette.error.main }}>*</span>}
       </Typography>
       <Tooltip title={description} placement="right">
         <InfoOutlined
           fontSize="small"
-          sx={{ color: theme.palette.secondary.main, cursor: "help" }}
+          sx={{ color: theme.palette.secondary.main, cursor: 'help' }}
         />
       </Tooltip>
     </Box>
@@ -84,15 +82,15 @@ function BetCreatePage() {
 
   // Form state (bet data)
   const [bet, setBet] = useState({
-    description: "",
-    closeDate: "",
-    closeTime: "",
-    endDate: "",
-    endTime: "",
-    options: ["", ""],
-    providers: [{ publicId: "", fee: "" }],
-    amountPerSlot: "",
-    maxBetSlots: "",
+    description: '',
+    closeDate: '',
+    closeTime: '',
+    endDate: '',
+    endTime: '',
+    options: ['', ''],
+    providers: [{ publicId: '', fee: '' }],
+    amountPerSlot: '',
+    maxBetSlots: '',
   });
 
   // Validation errors
@@ -114,16 +112,16 @@ function BetCreatePage() {
   const uploadDescription = async (description, encodedHash) => {
     try {
       const response = await fetch(`${externalJsonAssetUrl}/upload`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ hash: encodedHash, description }),
       });
       const data = await response.json();
       return data.success;
     } catch (error) {
-      console.error("Error uploading description:", error);
+      console.error('Error uploading description:', error);
       return false;
     }
   };
@@ -136,39 +134,39 @@ function BetCreatePage() {
 
     // Description (1-100 chars)
     if (!bet.description || bet.description.length === 0) {
-      newErrors.description = "Description is required.";
+      newErrors.description = 'Description is required.';
     } else if (bet.description.length > 100) {
-      newErrors.description = "Description cannot exceed 100 characters.";
+      newErrors.description = 'Description cannot exceed 100 characters.';
     }
 
     // CloseDate / EndDate + Time
     const closeValid = bet.closeDate && bet.closeTime;
     const endValid = bet.endDate && bet.endTime;
     if (!closeValid) {
-      newErrors.closeDateTime = "Close date/time is required.";
+      newErrors.closeDateTime = 'Close date/time is required.';
     }
     if (!endValid) {
-      newErrors.endDateTime = "End date/time is required.";
+      newErrors.endDateTime = 'End date/time is required.';
     }
     if (closeValid && endValid) {
       const closeDateTime = new Date(`${bet.closeDate}T${bet.closeTime}Z`);
       const endDateTime = new Date(`${bet.endDate}T${bet.endTime}Z`);
       if (endDateTime <= closeDateTime) {
-        newErrors.endDateTime = "End DateTime must be after Close DateTime.";
+        newErrors.endDateTime = 'End DateTime must be after Close DateTime.';
       }
     }
 
     // Options : min 2, max 8, each <= 32 chars
     if (bet.options.length < 2) {
-      newErrors.options = "At least 2 options are required.";
+      newErrors.options = 'At least 2 options are required.';
     } else {
       for (let opt of bet.options) {
-        if (!opt || opt.trim() === "") {
-          newErrors.options = "All options must be non-empty.";
+        if (!opt || opt.trim() === '') {
+          newErrors.options = 'All options must be non-empty.';
           break;
         }
         if (opt.length > 32) {
-          newErrors.options = "Options cannot exceed 32 characters.";
+          newErrors.options = 'Options cannot exceed 32 characters.';
           break;
         }
       }
@@ -176,15 +174,15 @@ function BetCreatePage() {
 
     // Providers : min 1, max 8, publicId(60 chars) + fee >= 0
     if (bet.providers.length < 1) {
-      newErrors.providers = "At least 1 provider is required.";
+      newErrors.providers = 'At least 1 provider is required.';
     } else {
       for (let p of bet.providers) {
         if (!p.publicId || p.publicId.length !== 60) {
-          newErrors.providers = "Each provider must have a 60-char publicId.";
+          newErrors.providers = 'Each provider must have a 60-char publicId.';
           break;
         }
         if (!p.fee || isNaN(Number(p.fee)) || Number(p.fee) < 0) {
-          newErrors.providers = "Each provider must have a valid fee (>=0).";
+          newErrors.providers = 'Each provider must have a valid fee (>=0).';
           break;
         }
       }
@@ -206,7 +204,7 @@ function BetCreatePage() {
       Number(bet.maxBetSlots) < 1 ||
       Number(bet.maxBetSlots) > 1024
     ) {
-      newErrors.maxBetSlots = "Max bet slots must be between 1 and 1024.";
+      newErrors.maxBetSlots = 'Max bet slots must be between 1 and 1024.';
     }
 
     setErrors(newErrors);
@@ -236,34 +234,34 @@ function BetCreatePage() {
     const diffHours = (endDateTime - closeDateTime) / (1000 * 60 * 60);
 
     if (diffHours <= 0) {
-      console.error("End DateTime must be after Close DateTime.");
+      console.error('End DateTime must be after Close DateTime.');
       return;
     }
 
-    console.log("Form is valid, proceeding...");
+    console.log('Form is valid, proceeding...');
 
     const creatorIdentity = await getCreatorIdentity();
 
     const firstPartHash = hashBetData(
       bet.description,
       creatorIdentity,
-      bet.providers.map(p => p.publicId),
+      bet.providers.map((p) => p.publicId),
       bet.options
-    )
+    );
 
-    // Second part hash 
+    // Second part hash
     const secondPartHash = hashUniqueData();
-    console.log(">>> secondPartHash:", secondPartHash, secondPartHash.length);
+    console.log('>>> secondPartHash:', secondPartHash, secondPartHash.length);
 
     // Final hash
     const finalHash = `${firstPartHash}${secondPartHash}`;
-    console.log(">>> finalHash:", finalHash, finalHash.length);
+    console.log('>>> finalHash:', finalHash, finalHash.length);
     const betDescriptionReference = `###${finalHash}`;
 
     // Description upload
     const uploadSuccess = await uploadDescription(bet.description, finalHash);
     if (!uploadSuccess) {
-      console.error("Failed to upload description");
+      console.error('Failed to upload description');
       return;
     }
 
@@ -287,8 +285,12 @@ function BetCreatePage() {
     // Verify if the user has enough balance to create the bet
     if (balance !== null && BigInt(balance) < BigInt(betCreationFee)) {
       showSnackbar(
-        `You do not have enough balance to create this bet. Your balance: ${formatQubicAmount(balance)} Qubic. Bet creation fee: ${formatQubicAmount(betCreationFee)} Qubic.`,
-        "error"
+        `You do not have enough balance to create this bet. Your balance: ${formatQubicAmount(
+          balance
+        )} Qubic. Bet creation fee: ${formatQubicAmount(
+          betCreationFee
+        )} Qubic.`,
+        'error'
       );
       return;
     }
@@ -303,7 +305,7 @@ function BetCreatePage() {
     // State update and show modal
     setBet(betToSend);
     setShowConfirmTxModal(true);
-    console.log("Valid Bet:", betToSend);
+    console.log('Valid Bet:', betToSend);
   };
 
   /**
@@ -320,7 +322,7 @@ function BetCreatePage() {
    */
   const addOption = () => {
     if (bet.options.length < 8) {
-      setBet({ ...bet, options: [...bet.options, ""] });
+      setBet({ ...bet, options: [...bet.options, ''] });
     }
   };
   const removeOption = (index) => {
@@ -335,7 +337,7 @@ function BetCreatePage() {
     if (bet.providers.length < 8) {
       setBet({
         ...bet,
-        providers: [...bet.providers, { publicId: "", fee: "" }],
+        providers: [...bet.providers, { publicId: '', fee: '' }],
       });
     }
   };
@@ -354,8 +356,8 @@ function BetCreatePage() {
 
     const minEndDateTime = new Date(closeDT.getTime() + 60 * 60 * 1000);
     const isoString = minEndDateTime.toISOString();
-    const minDate = isoString.split("T")[0];
-    const minTime = isoString.split("T")[1].slice(0, 5);
+    const minDate = isoString.split('T')[0];
+    const minTime = isoString.split('T')[1].slice(0, 5);
     return { date: minDate, time: minTime };
   };
   const minEnd = calculateMinEndDateTime();
@@ -371,12 +373,12 @@ function BetCreatePage() {
           p: { xs: 0, md: 4 },
           backgroundColor: {
             xs: theme.palette.background.default, // Fond pour les petits écrans
-            md: theme.palette.background.paper,  // Fond pour les écrans md et plus
+            md: theme.palette.background.paper, // Fond pour les écrans md et plus
           },
           borderRadius: 1,
           border: {
             md: `1px solid ${theme.palette.secondary.main}`,
-            xs: "none",
+            xs: 'none',
           },
         }}
       >
@@ -384,7 +386,7 @@ function BetCreatePage() {
         <Box display="flex" alignItems="center" mb={3}>
           <IconButton
             aria-label="go back"
-            onClick={() => navigate("/")}
+            onClick={() => navigate('/')}
             sx={{ mr: 2 }}
           >
             <ArrowBackIcon />
@@ -410,7 +412,9 @@ function BetCreatePage() {
                 fullWidth
                 variant="outlined"
                 value={bet.description}
-                onChange={(e) => setBet({ ...bet, description: e.target.value })}
+                onChange={(e) =>
+                  setBet({ ...bet, description: e.target.value })
+                }
                 placeholder="Enter bet description"
                 error={Boolean(errors.description)}
                 helperText={errors.description}
@@ -440,8 +444,8 @@ function BetCreatePage() {
                       setBet({
                         ...bet,
                         closeDate: newValue
-                          ? newValue.format("YYYY-MM-DD")
-                          : "",
+                          ? newValue.format('YYYY-MM-DD')
+                          : '',
                       })
                     }
                     slotProps={{
@@ -459,13 +463,11 @@ function BetCreatePage() {
                   />
                   <TimePicker
                     label="Close Time"
-                    value={bet.closeTime ? dayjs(bet.closeTime, "HH:mm") : null}
+                    value={bet.closeTime ? dayjs(bet.closeTime, 'HH:mm') : null}
                     onChange={(newValue) =>
                       setBet({
                         ...bet,
-                        closeTime: newValue
-                          ? newValue.format("HH:mm")
-                          : "",
+                        closeTime: newValue ? newValue.format('HH:mm') : '',
                       })
                     }
                     slotProps={{
@@ -500,7 +502,7 @@ function BetCreatePage() {
                     onChange={(newValue) =>
                       setBet({
                         ...bet,
-                        endDate: newValue ? newValue.format("YYYY-MM-DD") : "",
+                        endDate: newValue ? newValue.format('YYYY-MM-DD') : '',
                       })
                     }
                     minDate={minEnd?.date ? dayjs(minEnd.date) : null}
@@ -519,14 +521,14 @@ function BetCreatePage() {
                   />
                   <TimePicker
                     label="End Time"
-                    value={bet.endTime ? dayjs(bet.endTime, "HH:mm") : null}
+                    value={bet.endTime ? dayjs(bet.endTime, 'HH:mm') : null}
                     onChange={(newValue) =>
                       setBet({
                         ...bet,
-                        endTime: newValue ? newValue.format("HH:mm") : "",
+                        endTime: newValue ? newValue.format('HH:mm') : '',
                       })
                     }
-                    minTime={minEnd?.time ? dayjs(minEnd.time, "HH:mm") : null}
+                    minTime={minEnd?.time ? dayjs(minEnd.time, 'HH:mm') : null}
                     slotProps={{
                       textField: {
                         fullWidth: true,
@@ -563,7 +565,13 @@ function BetCreatePage() {
                 required
               />
               {bet.options.map((opt, index) => (
-                <Box key={index} display="flex" alignItems="center" gap={1} mt={1}>
+                <Box
+                  key={index}
+                  display="flex"
+                  alignItems="center"
+                  gap={1}
+                  mt={1}
+                >
                   <TextField
                     fullWidth
                     variant="outlined"
@@ -577,7 +585,10 @@ function BetCreatePage() {
                     sx={{ backgroundColor: theme.palette.background.default }}
                   />
                   {bet.options.length > 2 && (
-                    <IconButton color="error" onClick={() => removeOption(index)}>
+                    <IconButton
+                      color="error"
+                      onClick={() => removeOption(index)}
+                    >
                       <Close />
                     </IconButton>
                   )}
@@ -590,7 +601,7 @@ function BetCreatePage() {
                   sx={{
                     mt: 1,
                     color:
-                      theme.palette.mode === "dark"
+                      theme.palette.mode === 'dark'
                         ? theme.palette.primary.main
                         : theme.palette.text.primary,
                   }}
@@ -613,7 +624,13 @@ function BetCreatePage() {
                 required
               />
               {bet.providers.map((p, index) => (
-                <Box key={index} display="flex" alignItems="center" gap={1} mt={1}>
+                <Box
+                  key={index}
+                  display="flex"
+                  alignItems="center"
+                  gap={1}
+                  mt={1}
+                >
                   <TextField
                     label="Provider PublicId"
                     placeholder="60-char ID"
@@ -625,7 +642,10 @@ function BetCreatePage() {
                       setBet({ ...bet, providers: newProv });
                     }}
                     error={Boolean(errors.providers)}
-                    sx={{ flex: 3, backgroundColor: theme.palette.background.default }}
+                    sx={{
+                      flex: 3,
+                      backgroundColor: theme.palette.background.default,
+                    }}
                   />
                   <TextField
                     label="Fee (%)"
@@ -638,13 +658,21 @@ function BetCreatePage() {
                       setBet({ ...bet, providers: newProv });
                     }}
                     InputProps={{
-                      endAdornment: <InputAdornment position="end"></InputAdornment>,
+                      endAdornment: (
+                        <InputAdornment position="end"></InputAdornment>
+                      ),
                     }}
                     error={Boolean(errors.providers)}
-                    sx={{ flex: 1, backgroundColor: theme.palette.background.default }}
+                    sx={{
+                      flex: 1,
+                      backgroundColor: theme.palette.background.default,
+                    }}
                   />
                   {bet.providers.length > 1 && (
-                    <IconButton color="error" onClick={() => removeProvider(index)}>
+                    <IconButton
+                      color="error"
+                      onClick={() => removeProvider(index)}
+                    >
                       <Close />
                     </IconButton>
                   )}
@@ -657,7 +685,7 @@ function BetCreatePage() {
                   sx={{
                     mt: 1,
                     color:
-                      theme.palette.mode === "dark"
+                      theme.palette.mode === 'dark'
                         ? theme.palette.primary.main
                         : theme.palette.text.primary,
                   }}
@@ -676,17 +704,24 @@ function BetCreatePage() {
             <Grid item xs={12} md={6}>
               <LabelWithPopover
                 label="Amount of Qubics per Slot"
-                description={`Min amount is ${formatQubicAmount(minBetSlotAmount)} qubics.`}
+                description={`Min amount is ${formatQubicAmount(
+                  minBetSlotAmount
+                )} qubics.`}
                 required
               />
               <TextField
                 fullWidth
                 type="number"
                 value={bet.amountPerSlot}
-                onChange={(e) => setBet({ ...bet, amountPerSlot: e.target.value })}
+                onChange={(e) =>
+                  setBet({ ...bet, amountPerSlot: e.target.value })
+                }
                 error={Boolean(errors.amountPerSlot)}
                 helperText={errors.amountPerSlot}
-                sx={{ mt: 1, backgroundColor: theme.palette.background.default }}
+                sx={{
+                  mt: 1,
+                  backgroundColor: theme.palette.background.default,
+                }}
               />
             </Grid>
 
@@ -701,10 +736,15 @@ function BetCreatePage() {
                 fullWidth
                 type="number"
                 value={bet.maxBetSlots}
-                onChange={(e) => setBet({ ...bet, maxBetSlots: e.target.value })}
+                onChange={(e) =>
+                  setBet({ ...bet, maxBetSlots: e.target.value })
+                }
                 error={Boolean(errors.maxBetSlots)}
                 helperText={errors.maxBetSlots}
-                sx={{ mt: 1, backgroundColor: theme.palette.background.default }}
+                sx={{
+                  mt: 1,
+                  backgroundColor: theme.palette.background.default,
+                }}
               />
             </Grid>
           </Grid>
@@ -719,7 +759,7 @@ function BetCreatePage() {
             >
               <Typography
                 variant="button"
-                sx={{ fontWeight: "bold", fontSize: "0.9rem" }}
+                sx={{ fontWeight: 'bold', fontSize: '0.9rem' }}
               >
                 Create Bet
               </Typography>
@@ -731,12 +771,12 @@ function BetCreatePage() {
       <ConfirmTxModal
         open={showConfirmTxModal}
         onClose={() => {
-          fetchBets("active");
+          fetchBets('active');
           setShowConfirmTxModal(false);
-          navigate("/");
+          navigate('/');
         }}
         tx={{
-          title: "Create Bet",
+          title: 'Create Bet',
           description: <BetCreateConfirm bet={bet} />,
         }}
         onConfirm={async () => {

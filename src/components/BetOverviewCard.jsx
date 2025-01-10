@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo } from 'react';
 import {
   Card,
   CardContent,
@@ -9,29 +9,29 @@ import {
   Stack,
   useTheme,
   Divider,
-} from "@mui/material";
-import { motion } from "framer-motion";
+} from '@mui/material';
+import { motion } from 'framer-motion';
 
-import LockIcon from "@mui/icons-material/Lock";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import HelpIcon from "@mui/icons-material/Help";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
-import DiamondIcon from "@mui/icons-material/Diamond";
-import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
-import EggIcon from "@mui/icons-material/Egg";
-import WhatshotIcon from "@mui/icons-material/Whatshot";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import PeopleIcon from "@mui/icons-material/People";
-import GavelIcon from "@mui/icons-material/Gavel";
-import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import LockIcon from '@mui/icons-material/Lock';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import HelpIcon from '@mui/icons-material/Help';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import DiamondIcon from '@mui/icons-material/Diamond';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import EggIcon from '@mui/icons-material/Egg';
+import WhatshotIcon from '@mui/icons-material/Whatshot';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PeopleIcon from '@mui/icons-material/People';
+import GavelIcon from '@mui/icons-material/Gavel';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 
-import { sumArray, formatQubicAmount } from "./qubic/util";
-import { formatDate } from "./qubic/util/commons";
+import { sumArray, formatQubicAmount } from './qubic/util';
+import { formatDate } from './qubic/util/commons';
 
 const getHotLevelIcon = (totalQus, slotsTaken, theme) => {
   const baseStyle = {
-    fontSize: "1.8rem",
-    transition: "transform 0.3s ease, color 0.3s ease",
+    fontSize: '1.8rem',
+    transition: 'transform 0.3s ease, color 0.3s ease',
   };
 
   const diamondColor = theme.palette.primary.light;
@@ -44,9 +44,7 @@ const getHotLevelIcon = (totalQus, slotsTaken, theme) => {
     return <DiamondIcon sx={{ ...baseStyle, color: diamondColor }} />;
   }
   if (totalQus >= 500_000_000 || slotsTaken >= 50) {
-    return (
-      <LocalFireDepartmentIcon sx={{ ...baseStyle, color: fireColor }} />
-    );
+    return <LocalFireDepartmentIcon sx={{ ...baseStyle, color: fireColor }} />;
   }
   if (totalQus >= 100_000_000 || slotsTaken >= 10) {
     return <WhatshotIcon sx={{ ...baseStyle, color: hotColor }} />;
@@ -57,32 +55,32 @@ const getHotLevelIcon = (totalQus, slotsTaken, theme) => {
   return <EggIcon sx={{ ...baseStyle, color: neutralColor }} />;
 };
 
-function BetOverviewCard({ data, onClick, status = "" }) {
+function BetOverviewCard({ data, onClick, status = '' }) {
   const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
+  const isDarkMode = theme.palette.mode === 'dark';
 
   const statusIcons = {
     active: {
       icon: <CheckCircleIcon />,
-      label: "Active",
+      label: 'Active',
       color: theme.palette.success.main,
       darkColor: theme.palette.success.light,
     },
     locked: {
       icon: <LockIcon />,
-      label: "Locked",
+      label: 'Locked',
       color: theme.palette.error.main,
       darkColor: theme.palette.error.light,
     },
     published: {
       icon: <EmojiEventsIcon />,
-      label: "Published",
+      label: 'Published',
       color: theme.palette.info.dark,
       darkColor: theme.palette.info.light,
     },
     waiting: {
       icon: <HelpIcon />,
-      label: "Waiting",
+      label: 'Waiting',
       color: theme.palette.warning.main,
       darkColor: theme.palette.warning.light,
     },
@@ -98,11 +96,11 @@ function BetOverviewCard({ data, onClick, status = "" }) {
 
   const dynamicColors = {
     shadowNormal: isDarkMode
-      ? "0 4px 8px rgba(0,0,0,0.6)"
-      : "0 4px 8px rgba(0,0,0,0.1)",
+      ? '0 4px 8px rgba(0,0,0,0.6)'
+      : '0 4px 8px rgba(0,0,0,0.1)',
     shadowHover: isDarkMode
-      ? "0 8px 24px rgba(0,0,0,0.8)"
-      : "0 8px 24px rgba(0,0,0,0.2)",
+      ? '0 8px 24px rgba(0,0,0,0.8)'
+      : '0 8px 24px rgba(0,0,0,0.2)',
   };
 
   return (
@@ -110,36 +108,41 @@ function BetOverviewCard({ data, onClick, status = "" }) {
       component={motion.div}
       initial={{ opacity: 0, scale: 0.9, rotate: 0 }}
       animate={{ opacity: 1, scale: 1, rotate: 0 }}
-      transition={{ duration: 0.5, type: "spring", stiffness: 200, damping: 15 }}
+      transition={{
+        duration: 0.5,
+        type: 'spring',
+        stiffness: 200,
+        damping: 15,
+      }}
       onClick={onClick}
       elevation={2}
       backgroundColor={theme.palette.background.paper}
       sx={{
-        cursor: "pointer",
+        cursor: 'pointer',
         borderRadius: 2,
-        border: "2px solid transparent",
-        overflow: "hidden",
-        position: "relative",
-        "&:hover": {
+        border: '2px solid transparent',
+        overflow: 'hidden',
+        position: 'relative',
+        '&:hover': {
           boxShadow: dynamicColors.shadowHover,
           backgroundColor: theme.palette.action.hover,
         },
       }}
     >
-      <CardContent sx={{ p: 3, position: "relative" }}>
+      <CardContent sx={{ p: 3, position: 'relative' }}>
         {statusData && (
           <Box
             sx={{
-              position: "absolute",
+              position: 'absolute',
               top: 0,
               left: 0,
-              width: "100%",
-              height: "4px",
+              width: '100%',
+              height: '4px',
               backgroundColor: isDarkMode
                 ? statusData.darkColor
                 : statusData.color,
-              borderTopLeftRadius: "16px",
-              borderTopRightRadius: "16px",
+              borderTopLeftRadius: '16px',
+              borderTopRightRadius: '16px',
             }}
           />
         )}
@@ -150,7 +153,7 @@ function BetOverviewCard({ data, onClick, status = "" }) {
               icon={statusData.icon}
               label={statusData.label}
               sx={{
-                fontSize: "0.875rem",
+                fontSize: '0.875rem',
                 color: isDarkMode
                   ? theme.palette.common.black
                   : theme.palette.common.white,
@@ -158,16 +161,16 @@ function BetOverviewCard({ data, onClick, status = "" }) {
                   ? statusData.darkColor
                   : statusData.color,
                 borderRadius: 2,
-                "& .MuiChip-icon": {
-                  fontSize: "1rem",
+                '& .MuiChip-icon': {
+                  fontSize: '1rem',
                   color: isDarkMode
                     ? theme.palette.common.black
                     : theme.palette.common.white,
                 },
-                [theme.breakpoints.down("sm")]: {
-                  fontSize: "0.75rem",
-                  "& .MuiChip-icon": {
-                    fontSize: "0.875rem",
+                [theme.breakpoints.down('sm')]: {
+                  fontSize: '0.75rem',
+                  '& .MuiChip-icon': {
+                    fontSize: '0.875rem',
                   },
                 },
               }}
@@ -182,10 +185,10 @@ function BetOverviewCard({ data, onClick, status = "" }) {
               fontWeight: 600,
               flex: 1,
               color: theme.palette.text.primary,
-              fontFamily: "Inter, sans-serif",
-              fontSize: "1.2rem",
-              [theme.breakpoints.down("sm")]: {
-                fontSize: "1rem",
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '1.2rem',
+              [theme.breakpoints.down('sm')]: {
+                fontSize: '1rem',
               },
             }}
           >
@@ -194,7 +197,7 @@ function BetOverviewCard({ data, onClick, status = "" }) {
         </Stack>
 
         <Divider
-        borderColor={theme.palette.divider}
+          borderColor={theme.palette.divider}
           sx={{
             mb: 2,
             mt: 1,
@@ -212,18 +215,18 @@ function BetOverviewCard({ data, onClick, status = "" }) {
             >
               <AccessTimeIcon
                 sx={{
-                  fontSize: "1.2rem",
-                  [theme.breakpoints.down("sm")]: {
-                    fontSize: "1rem",
+                  fontSize: '1.2rem',
+                  [theme.breakpoints.down('sm')]: {
+                    fontSize: '1rem',
                   },
                 }}
               />
               <Typography
                 variant="body2"
                 sx={{
-                  fontSize: "0.9rem",
-                  [theme.breakpoints.down("sm")]: {
-                    fontSize: "0.8rem",
+                  fontSize: '0.9rem',
+                  [theme.breakpoints.down('sm')]: {
+                    fontSize: '0.8rem',
                   },
                 }}
               >
@@ -241,44 +244,44 @@ function BetOverviewCard({ data, onClick, status = "" }) {
                 icon: (
                   <PeopleIcon
                     sx={{
-                      fontSize: "1.2rem",
-                      [theme.breakpoints.down("sm")]: {
-                        fontSize: "1rem",
+                      fontSize: '1.2rem',
+                      [theme.breakpoints.down('sm')]: {
+                        fontSize: '1rem',
                       },
                     }}
                   />
                 ),
                 value: slotsTaken,
-                label: "Slots",
+                label: 'Slots',
               },
               {
                 icon: (
                   <GavelIcon
                     sx={{
-                      fontSize: "1.2rem",
-                      [theme.breakpoints.down("sm")]: {
-                        fontSize: "1rem",
+                      fontSize: '1.2rem',
+                      [theme.breakpoints.down('sm')]: {
+                        fontSize: '1rem',
                       },
                     }}
                   />
                 ),
                 value: `${sumArray(data.oracle_fee)} %`,
-                label: "Fee",
+                label: 'Fee',
               },
               {
                 icon: (
                   <LocalFireDepartmentIcon
                     sx={{
-                      fontSize: "1.2rem",
+                      fontSize: '1.2rem',
                       color: theme.palette.error.dark,
-                      [theme.breakpoints.down("sm")]: {
-                        fontSize: "1rem",
+                      [theme.breakpoints.down('sm')]: {
+                        fontSize: '1rem',
                       },
                     }}
                   />
                 ),
-                value: "2 %",
-                label: "Burn",
+                value: '2 %',
+                label: 'Burn',
               },
             ].map((item, index) => (
               <Grid item xs={4} key={index}>
@@ -294,10 +297,10 @@ function BetOverviewCard({ data, onClick, status = "" }) {
                     sx={{
                       fontWeight: 500,
                       color: theme.palette.text.primary,
-                      fontFamily: "Inter, sans-serif",
-                      fontSize: "0.9rem",
-                      [theme.breakpoints.down("sm")]: {
-                        fontSize: "0.8rem",
+                      fontFamily: 'Inter, sans-serif',
+                      fontSize: '0.9rem',
+                      [theme.breakpoints.down('sm')]: {
+                        fontSize: '0.8rem',
                       },
                     }}
                   >
@@ -321,12 +324,12 @@ function BetOverviewCard({ data, onClick, status = "" }) {
             alignItems="center"
             gap={1}
             sx={{
-              "&:hover": {
+              '&:hover': {
                 color: isDarkMode
                   ? theme.palette.info.light
                   : theme.palette.warning.light,
               },
-              transition: "transform 0.3s ease, color 0.3s ease",
+              transition: 'transform 0.3s ease, color 0.3s ease',
             }}
           >
             {hotLevelIcon}
@@ -337,9 +340,9 @@ function BetOverviewCard({ data, onClick, status = "" }) {
               fontSize="small"
               sx={{
                 color: theme.palette.text.secondary,
-                fontSize: "1.2rem",
-                [theme.breakpoints.down("sm")]: {
-                  fontSize: "1rem",
+                fontSize: '1.2rem',
+                [theme.breakpoints.down('sm')]: {
+                  fontSize: '1rem',
                 },
               }}
             />
@@ -348,10 +351,10 @@ function BetOverviewCard({ data, onClick, status = "" }) {
               sx={{
                 fontWeight: 600,
                 color: theme.palette.text.primary,
-                fontFamily: "Inter, sans-serif",
-                fontSize: "1.2rem",
-                [theme.breakpoints.down("sm")]: {
-                  fontSize: "1rem",
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '1.2rem',
+                [theme.breakpoints.down('sm')]: {
+                  fontSize: '1rem',
                 },
               }}
             >

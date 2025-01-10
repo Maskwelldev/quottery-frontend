@@ -1,5 +1,11 @@
 // src/contexts/ThemeContext.js
-import React, { createContext, useContext, useState, useMemo, useEffect } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useEffect,
+} from 'react';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { lightTheme, darkTheme } from '../Theme';
 
@@ -14,13 +20,18 @@ export const ThemeContextProvider = ({ children }) => {
     if (savedTheme !== null) {
       return JSON.parse(savedTheme);
     }
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches;
     return prefersDark;
   };
 
   const [isDarkMode, setIsDarkMode] = useState(getInitialTheme);
 
-  const theme = useMemo(() => (isDarkMode ? darkTheme : lightTheme), [isDarkMode]);
+  const theme = useMemo(
+    () => (isDarkMode ? darkTheme : lightTheme),
+    [isDarkMode]
+  );
 
   const toggleTheme = () => {
     setIsDarkMode((prevMode) => !prevMode);

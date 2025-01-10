@@ -1,10 +1,10 @@
 // src/components/RandomBetsTicker.js
-import React, { useEffect, useState } from "react";
-import { Box, Chip, Paper } from "@mui/material";
-import { motion } from "framer-motion";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import { useQuotteryContext } from "../../contexts/QuotteryContext";
-import { useTheme } from "@mui/material/styles";
+import React, { useEffect, useState } from 'react';
+import { Box, Chip, Paper } from '@mui/material';
+import { motion } from 'framer-motion';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import { useQuotteryContext } from '../../contexts/QuotteryContext';
+import { useTheme } from '@mui/material/styles';
 
 const icons = [<TrendingUpIcon />];
 
@@ -29,41 +29,41 @@ const RandomBetsTicker = () => {
   return (
     <Box
       sx={{
-        width: "100%",
-        position: "fixed",
+        width: '100%',
+        position: 'fixed',
         bottom: 0,
         left: 0,
         zIndex: 1000,
-        overflow: "hidden",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        pointerEvents: "none",
-        backgroundColor: "transparent",
+        overflow: 'hidden',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        pointerEvents: 'none',
+        backgroundColor: 'transparent',
       }}
     >
       <Paper
         elevation={3}
         sx={{
-          width: "100%",
+          width: '100%',
           py: 1,
           px: 2,
-          bgcolor: "transparent",
+          bgcolor: 'transparent',
           borderRadius: 0,
-          pointerEvents: "auto",
+          pointerEvents: 'auto',
         }}
       >
         <Box
           component={motion.div}
           sx={{
-            display: "flex",
-            gap: "2rem",
-            whiteSpace: "nowrap",
+            display: 'flex',
+            gap: '2rem',
+            whiteSpace: 'nowrap',
           }}
-          initial={{ x: "100%" }}
-          animate={{ x: "-100%" }}
+          initial={{ x: '100%' }}
+          animate={{ x: '-100%' }}
           transition={{
-            ease: "linear",
+            ease: 'linear',
             duration: 20,
             repeat: Infinity,
           }}
@@ -74,13 +74,13 @@ const RandomBetsTicker = () => {
               label={bet.full_description || bet.bet_desc}
               icon={icons[index % icons.length]}
               sx={{
-                fontSize: "0.9rem",
-                fontWeight: "bold",
+                fontSize: '0.9rem',
+                fontWeight: 'bold',
                 backgroundColor: theme.palette.primary.main,
-                color: "primary.contrastText",
+                color: 'primary.contrastText',
                 boxShadow: 1,
-                "&:hover": {
-                  backgroundColor: "primary.main",
+                '&:hover': {
+                  backgroundColor: 'primary.main',
                 },
               }}
             />

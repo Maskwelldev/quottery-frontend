@@ -166,10 +166,19 @@ const UserBets = () => {
     </Box>
   );
 
-  if (!annotatedActiveBets.length && !annotatedHistoricalBets.length && loadingParticipated) {
+  if (
+    !annotatedActiveBets.length &&
+    !annotatedHistoricalBets.length &&
+    loadingParticipated
+  ) {
     return (
       <Box textAlign="center" mt={8}>
-        <Typography variant={isMobile ? 'body1' : 'h6'} gutterBottom mt={12} mb={4}>
+        <Typography
+          variant={isMobile ? 'body1' : 'h6'}
+          gutterBottom
+          mt={12}
+          mb={4}
+        >
           Loading bets, please wait...
         </Typography>
         <AnimateBars />
@@ -198,7 +207,11 @@ const UserBets = () => {
           <Typography
             variant={isMobile ? 'body2' : 'h6'}
             color={theme.palette.primary.main}
-            sx={{ wordBreak: 'break-all', display: 'flex', alignItems: 'center' }}
+            sx={{
+              wordBreak: 'break-all',
+              display: 'flex',
+              alignItems: 'center',
+            }}
           >
             {truncateMiddle(walletPublicIdentity, 40)}
             <Tooltip title="Copier l'ID Public">
@@ -231,7 +244,9 @@ const UserBets = () => {
         {annotatedActiveBets.length > 0 ? (
           renderBets(annotatedActiveBets)
         ) : (
-          <Typography variant={isMobile ? 'body2' : 'body1'}>Aucun pari actif.</Typography>
+          <Typography variant={isMobile ? 'body2' : 'body1'}>
+            Aucun pari actif.
+          </Typography>
         )}
       </Box>
 
@@ -243,7 +258,9 @@ const UserBets = () => {
         {annotatedHistoricalBets.length > 0 ? (
           renderBets(annotatedHistoricalBets)
         ) : (
-          <Typography variant={isMobile ? 'body2' : 'body1'}>Historical bets not found.</Typography>
+          <Typography variant={isMobile ? 'body2' : 'body1'}>
+            Historical bets not found.
+          </Typography>
         )}
       </Box>
 
@@ -253,13 +270,16 @@ const UserBets = () => {
           title="Participated Bets"
         />
         {betsParticipated.length > 0 ? (
-          renderBets(betsParticipated.map((bet) => ({
-            ...bet,
-            status: 'participated',
-          }))
+          renderBets(
+            betsParticipated.map((bet) => ({
+              ...bet,
+              status: 'participated',
+            }))
           )
         ) : (
-          <Typography variant={isMobile ? 'body2' : 'body1'}>No participated bets found.</Typography>
+          <Typography variant={isMobile ? 'body2' : 'body1'}>
+            No participated bets found.
+          </Typography>
         )}
       </Box>
 

@@ -19,7 +19,7 @@ const BarContainer = styled(Box)({
   justifyContent: 'center',
   height: '84px',
   gap: '10px',
-  marginTop: '16px'
+  marginTop: '16px',
 });
 
 // Styled component for the animated bars
@@ -32,8 +32,8 @@ const AnimatedBar = styled(Box)(({ isFirst }) => ({
   transformOrigin: isFirst ? 'center top' : 'center bottom',
   willChange: 'transform',
   '@media (prefers-reduced-motion: reduce)': {
-    animation: 'none'
-  }
+    animation: 'none',
+  },
 }));
 
 const LoadingAnimation = () => {
@@ -41,7 +41,7 @@ const LoadingAnimation = () => {
     <BarContainer>
       {/* First bar (bounce up) */}
       <AnimatedBar isFirst={true} />
-      
+
       {/* Second bar (bounce down) */}
       <AnimatedBar isFirst={false} />
     </BarContainer>

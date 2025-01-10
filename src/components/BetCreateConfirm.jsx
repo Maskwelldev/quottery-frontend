@@ -30,7 +30,13 @@ const TableRowItem = ({ icon, label, children }) => {
       <TableCell
         component="th"
         scope="row"
-        sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 'bold', color: theme.palette.text.secondary }}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          fontWeight: 'bold',
+          color: theme.palette.text.secondary,
+        }}
       >
         {icon}
         {label}
@@ -42,7 +48,8 @@ const TableRowItem = ({ icon, label, children }) => {
 
 const BetCreateConfirm = ({ bet }) => {
   const theme = useTheme();
-  const { issueBetTxCosts, balance, fetchBalance, walletPublicIdentity } = useQuotteryContext();
+  const { issueBetTxCosts, balance, fetchBalance, walletPublicIdentity } =
+    useQuotteryContext();
   const [hasEnoughBalance, setHasEnoughBalance] = useState(true);
 
   useEffect(() => {
@@ -64,10 +71,16 @@ const BetCreateConfirm = ({ bet }) => {
       sx={{
         p: 0,
         bgcolor: 'inherit',
-        borderRadius: 2,  
+        borderRadius: 2,
       }}
     >
-      <Box display="flex" alignItems="center" gap={1} mb={3} sx={{ color: theme.palette.primary.main }}>
+      <Box
+        display="flex"
+        alignItems="center"
+        gap={1}
+        mb={3}
+        sx={{ color: theme.palette.primary.main }}
+      >
         <DnsIcon />
         <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
           Détails du Pari
@@ -77,19 +90,31 @@ const BetCreateConfirm = ({ bet }) => {
       <TableContainer>
         <Table>
           <TableBody>
-            <TableRowItem icon={<DescriptionIcon fontSize="small" />} label="Description">
+            <TableRowItem
+              icon={<DescriptionIcon fontSize="small" />}
+              label="Description"
+            >
               {bet.descriptionFull}
             </TableRowItem>
 
-            <TableRowItem icon={<EventIcon fontSize="small" />} label="Date et Heure de Clôture">
+            <TableRowItem
+              icon={<EventIcon fontSize="small" />}
+              label="Date et Heure de Clôture"
+            >
               {bet.closeDateTime.date} {bet.closeDateTime.time}
             </TableRowItem>
 
-            <TableRowItem icon={<EventIcon fontSize="small" />} label="Date et Heure de Fin">
+            <TableRowItem
+              icon={<EventIcon fontSize="small" />}
+              label="Date et Heure de Fin"
+            >
               {bet.endDateTime.date} {bet.endDateTime.time}
             </TableRowItem>
 
-            <TableRowItem icon={<StorageIcon fontSize="small" />} label="Options">
+            <TableRowItem
+              icon={<StorageIcon fontSize="small" />}
+              label="Options"
+            >
               <List dense sx={{ listStyleType: 'disc', pl: 2, m: 0 }}>
                 {bet.options.map((option, idx) => (
                   <ListItem key={idx} sx={{ display: 'list-item', py: 0 }}>
@@ -99,40 +124,57 @@ const BetCreateConfirm = ({ bet }) => {
               </List>
             </TableRowItem>
 
-            <TableRowItem icon={<StorageIcon fontSize="small" />} label="Fournisseurs d'Oracles">
+            <TableRowItem
+              icon={<StorageIcon fontSize="small" />}
+              label="Fournisseurs d'Oracles"
+            >
               <List dense sx={{ listStyleType: 'disc', pl: 2, m: 0 }}>
                 {bet.providers.map((provider, idx) => (
                   <ListItem key={idx} sx={{ display: 'list-item', py: 0 }}>
                     <ListItemText
-                      primary={`${truncateMiddle(provider.publicId, 40)} – ${provider.fee}%`}
+                      primary={`${truncateMiddle(provider.publicId, 40)} – ${
+                        provider.fee
+                      }%`}
                     />
                   </ListItem>
                 ))}
               </List>
             </TableRowItem>
 
-            <TableRowItem icon={<AccountBalanceIcon fontSize="small" />} label="Nombre de Qus par Slot">
+            <TableRowItem
+              icon={<AccountBalanceIcon fontSize="small" />}
+              label="Nombre de Qus par Slot"
+            >
               {bet.amountPerSlot.toLocaleString()} QUBIC
             </TableRowItem>
 
-            <TableRowItem icon={<AccountBalanceIcon fontSize="small" />} label="Max. Slots par Option">
+            <TableRowItem
+              icon={<AccountBalanceIcon fontSize="small" />}
+              label="Max. Slots par Option"
+            >
               {bet.maxBetSlots}
             </TableRowItem>
 
-            <TableRowItem icon={<AccountBalanceIcon fontSize="small" />} label="Frais de Création">
+            <TableRowItem
+              icon={<AccountBalanceIcon fontSize="small" />}
+              label="Frais de Création"
+            >
               {bet.costs.toLocaleString()} QUBIC
             </TableRowItem>
 
             {balance !== null && (
-              <TableRowItem icon={<AccountBalanceIcon fontSize="small" />} label="Votre Solde">
-                <Typography variant="body2" >
+              <TableRowItem
+                icon={<AccountBalanceIcon fontSize="small" />}
+                label="Votre Solde"
+              >
+                <Typography variant="body2">
                   {formatQubicAmount(balance)} QUBIC
                 </Typography>
                 {!hasEnoughBalance && (
                   <Alert severity="error" sx={{ mt: 1 }}>
-                    Vous n'avez pas assez de solde pour créer ce pari. Votre solde :{' '}
-                    {formatQubicAmount(balance)} QUBIC, frais de création :{' '}
-                    {formatQubicAmount(bet.costs)} QUBIC.
+                    Vous n'avez pas assez de solde pour créer ce pari. Votre
+                    solde : {formatQubicAmount(balance)} QUBIC, frais de
+                    création : {formatQubicAmount(bet.costs)} QUBIC.
                   </Alert>
                 )}
               </TableRowItem>

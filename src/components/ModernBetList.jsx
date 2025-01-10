@@ -10,7 +10,7 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemAvatar
+  ListItemAvatar,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import LockIcon from '@mui/icons-material/Lock';
@@ -26,17 +26,37 @@ import { formatDate } from '../components/qubic/util/commons';
 import { formatQubicAmount } from './qubic/util';
 
 const statusIcons = {
-  active: { icon: <CheckCircleIcon fontSize="small" />, label: 'Active', color: 'success' },
-  locked: { icon: <LockIcon fontSize="small" />, label: 'Locked', color: 'warning' },
-  published: { icon: <EmojiEventsIcon fontSize="small" />, label: 'Published', color: 'primary' },
-  waiting: { icon: <HelpIcon fontSize="small" />, label: 'Waiting', color: 'default' },
+  active: {
+    icon: <CheckCircleIcon fontSize="small" />,
+    label: 'Active',
+    color: 'success',
+  },
+  locked: {
+    icon: <LockIcon fontSize="small" />,
+    label: 'Locked',
+    color: 'warning',
+  },
+  published: {
+    icon: <EmojiEventsIcon fontSize="small" />,
+    label: 'Published',
+    color: 'primary',
+  },
+  waiting: {
+    icon: <HelpIcon fontSize="small" />,
+    label: 'Waiting',
+    color: 'default',
+  },
 };
 
 const getHotLevelIcon = (totalQus, slotsTaken) => {
-  if (totalQus >= 1000000000 || slotsTaken >= 100) return <DiamondIcon fontSize="small" color="primary" />;
-  if (totalQus >= 500000000 || slotsTaken >= 50) return <LocalFireDepartmentIcon fontSize="small" color="error" />;
-  if (totalQus >= 100000000 || slotsTaken >= 10) return <WhatshotIcon fontSize="small" color="warning" />;
-  if (totalQus >= 10000000 || slotsTaken >= 5) return <EggIcon fontSize="small" color="action" />;
+  if (totalQus >= 1000000000 || slotsTaken >= 100)
+    return <DiamondIcon fontSize="small" color="primary" />;
+  if (totalQus >= 500000000 || slotsTaken >= 50)
+    return <LocalFireDepartmentIcon fontSize="small" color="error" />;
+  if (totalQus >= 100000000 || slotsTaken >= 10)
+    return <WhatshotIcon fontSize="small" color="warning" />;
+  if (totalQus >= 10000000 || slotsTaken >= 5)
+    return <EggIcon fontSize="small" color="action" />;
   return <EggIcon fontSize="small" color="disabled" />;
 };
 
@@ -55,7 +75,10 @@ function ModernBetList({ bets, onBetClick }) {
         {bets.map((data, index) => {
           const slotsTaken = sumArray(data.current_num_selection);
           const statusData = statusIcons[data.status] || null;
-          const hotLevelIcon = getHotLevelIcon(data.current_total_qus, slotsTaken);
+          const hotLevelIcon = getHotLevelIcon(
+            data.current_total_qus,
+            slotsTaken
+          );
 
           return (
             <React.Fragment key={data.bet_id}>
@@ -75,7 +98,11 @@ function ModernBetList({ bets, onBetClick }) {
                   },
                 }}
               >
-                <Stack spacing={0.5} mb={{ xs: 1, sm: 0 }} sx={{ maxWidth: { xs: '100%', sm: '60%' } }}>
+                <Stack
+                  spacing={0.5}
+                  mb={{ xs: 1, sm: 0 }}
+                  sx={{ maxWidth: { xs: '100%', sm: '60%' } }}
+                >
                   <Stack direction="row" alignItems="center" spacing={1}>
                     {statusData && (
                       <Chip
@@ -86,19 +113,31 @@ function ModernBetList({ bets, onBetClick }) {
                         sx={{ fontWeight: 'bold' }}
                       />
                     )}
-                    <Typography variant="h6" sx={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontWeight: 600,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
                       {data.full_description || data.bet_desc}
                     </Typography>
                   </Stack>
                   <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    Closes at: {formatDate(data.close_date)} {data.close_time.slice(0, -3)} UTC
+                    Closes at: {formatDate(data.close_date)}{' '}
+                    {data.close_time.slice(0, -3)} UTC
                   </Typography>
                 </Stack>
 
                 <Stack direction="row" spacing={3} alignItems="center">
                   <Stack direction="row" alignItems="center" spacing={0.5}>
                     {hotLevelIcon}
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: 'text.secondary' }}
+                    >
                       {slotsTaken} slots
                     </Typography>
                   </Stack>
@@ -109,7 +148,11 @@ function ModernBetList({ bets, onBetClick }) {
                     Burn: 2%
                   </Typography>
                   <Stack direction="row" alignItems="center" spacing={0.5}>
-                    <Avatar src={QubicCoin} alt="Qubic Coin" sx={{ width: 24, height: 24 }} />
+                    <Avatar
+                      src={QubicCoin}
+                      alt="Qubic Coin"
+                      sx={{ width: 24, height: 24 }}
+                    />
                     <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                       {formatQubicAmount(data.current_total_qus)} QUBIC
                     </Typography>

@@ -17,7 +17,12 @@ import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import GamesIcon from '@mui/icons-material/Games';
 import { formatQubicAmount } from './qubic/util';
 
-const BetDetails = ({ title, betOptionDescription, amountOfBetSlots, optionCosts }) => {
+const BetDetails = ({
+  title,
+  betOptionDescription,
+  amountOfBetSlots,
+  optionCosts,
+}) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -40,10 +45,7 @@ const BetDetails = ({ title, betOptionDescription, amountOfBetSlots, optionCosts
   ];
 
   return (
-    <Paper
-      elevation={0}
-      sx={{mt: 1}}
-    >
+    <Paper elevation={0} sx={{ mt: 1 }}>
       <Stack spacing={0}>
         <Typography
           variant={isSmallScreen ? 'body1' : 'h7'}
@@ -60,9 +62,7 @@ const BetDetails = ({ title, betOptionDescription, amountOfBetSlots, optionCosts
           {details.map((detail, index) => (
             <React.Fragment key={index}>
               <ListItem disableGutters>
-                <ListItemIcon sx={{ minWidth: 40 }}>
-                    {detail.icon}
-                </ListItemIcon>
+                <ListItemIcon sx={{ minWidth: 40 }}>{detail.icon}</ListItemIcon>
                 <ListItemText
                   primary={
                     <Typography
@@ -117,7 +117,9 @@ const BetDetails = ({ title, betOptionDescription, amountOfBetSlots, optionCosts
                     color: theme.palette.text.main,
                   }}
                 >
-                  {`${optionCosts ? formatQubicAmount(optionCosts) : "0"} QUBIC`}
+                  {`${
+                    optionCosts ? formatQubicAmount(optionCosts) : '0'
+                  } QUBIC`}
                 </Typography>
               }
             />

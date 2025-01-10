@@ -37,7 +37,13 @@ const Footer = () => {
         </Typography>
       </Box>
 
-      <Box display="flex" alignItems="center" gap={1} flexWrap="wrap" justifyContent="center">
+      <Box
+        display="flex"
+        alignItems="center"
+        gap={1}
+        flexWrap="wrap"
+        justifyContent="center"
+      >
         <Link
           href="https://qubic.org/Terms-of-service"
           target="_blank"
@@ -49,7 +55,11 @@ const Footer = () => {
         >
           Terms of service
         </Link>
-        <Divider orientation="vertical" flexItem sx={{ mx: 1, bgcolor: theme.palette.divider }} />
+        <Divider
+          orientation="vertical"
+          flexItem
+          sx={{ mx: 1, bgcolor: theme.palette.divider }}
+        />
 
         <Link
           href="https://github.com/qubic/quottery-frontend/wiki"
@@ -62,7 +72,11 @@ const Footer = () => {
         >
           Wiki
         </Link>
-        <Divider orientation="vertical" flexItem sx={{ mx: 1, bgcolor: theme.palette.divider }} />
+        <Divider
+          orientation="vertical"
+          flexItem
+          sx={{ mx: 1, bgcolor: theme.palette.divider }}
+        />
 
         <Link
           href="https://qubic.org/Privacy-policy"
@@ -75,7 +89,11 @@ const Footer = () => {
         >
           Privacy Policy
         </Link>
-        <Divider orientation="vertical" flexItem sx={{ mx: 1, bgcolor: theme.palette.divider }} />
+        <Divider
+          orientation="vertical"
+          flexItem
+          sx={{ mx: 1, bgcolor: theme.palette.divider }}
+        />
 
         <Link
           href="https://status.qubic.li/"
@@ -100,7 +118,10 @@ const Footer = () => {
         Version {pkg.version}
       </Typography>
 
-      <ServerConfigModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <ServerConfigModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </Box>
   );
 };

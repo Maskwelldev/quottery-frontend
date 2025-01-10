@@ -1,5 +1,5 @@
 /* global BigInt */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -12,17 +12,17 @@ import {
   useTheme,
   Snackbar,
   Alert,
-} from "@mui/material";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import PhonelinkIcon from "@mui/icons-material/Phonelink";
-import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import CloseIcon from "@mui/icons-material/Close";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
-import SyncIcon from "@mui/icons-material/Sync";
-import { useQubicConnect } from "./QubicConnectContext";
+} from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import PhonelinkIcon from '@mui/icons-material/Phonelink';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import CloseIcon from '@mui/icons-material/Close';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import SyncIcon from '@mui/icons-material/Sync';
+import { useQubicConnect } from './QubicConnectContext';
 
-import BetDetails from "../../ConfirmBetDetails";
+import BetDetails from '../../ConfirmBetDetails';
 
 const ConfirmTxModal = ({
   tx,
@@ -42,12 +42,12 @@ const ConfirmTxModal = ({
   const [tick, setTick] = useState(null);
 
   const [transactionStatus, setTransactionStatus] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
   const theme = useTheme();
 
   const refetchInterval = 3000;
 
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
     let intervalId;
@@ -57,15 +57,15 @@ const ConfirmTxModal = ({
         const t = await getTick();
         setTick(t);
       } catch (error) {
-        console.error("Erreur lors de la récupération du tick :", error);
-        setTransactionStatus("failure");
+        console.error('Erreur lors de la récupération du tick :', error);
+        setTransactionStatus('failure');
         setErrorMessage(
           "Erreur lors de la récupération de l'état de la transaction."
         );
       }
     };
 
-    if (confirmedTx && transactionStatus === "pending") {
+    if (confirmedTx && transactionStatus === 'pending') {
       fetchTick();
       intervalId = setInterval(fetchTick, refetchInterval);
     }
@@ -84,14 +84,14 @@ const ConfirmTxModal = ({
         if (onTransactionComplete) {
           onTransactionComplete();
         }
-        setTransactionStatus("success");
+        setTransactionStatus('success');
       }
     }
   }, [tick, confirmedTx, initialTick, onTransactionComplete]);
 
   useEffect(() => {
     if (
-      (transactionStatus === "success" || transactionStatus === "failure") &&
+      (transactionStatus === 'success' || transactionStatus === 'failure') &&
       open
     ) {
       const timeoutId = setTimeout(() => {
@@ -107,16 +107,16 @@ const ConfirmTxModal = ({
 
   const startTickFetchInterval = async (cTx) => {
     try {
-      setTransactionStatus("pending");
+      setTransactionStatus('pending');
       cTx.targetTick = cTx.targetTick + 2;
 
       const initialTickValue = await getTick();
       setInitialTick(initialTickValue);
       setConfirmedTx(cTx);
     } catch (error) {
-      console.error("Erreur lors du démarrage de la transaction :", error);
-      setTransactionStatus("failure");
-      setErrorMessage("La transaction a échoué. Veuillez réessayer.");
+      console.error('Erreur lors du démarrage de la transaction :', error);
+      setTransactionStatus('failure');
+      setErrorMessage('La transaction a échoué. Veuillez réessayer.');
     }
   };
 
@@ -126,17 +126,17 @@ const ConfirmTxModal = ({
       if (confirmed && confirmed.targetTick) {
         startTickFetchInterval(confirmed);
       } else {
-        throw new Error("Transaction non confirmée correctement.");
+        throw new Error('Transaction non confirmée correctement.');
       }
     } catch (error) {
-      console.error("Erreur lors de la confirmation :", error);
-      setTransactionStatus("failure");
-      setErrorMessage("La confirmation a échoué. Veuillez réessayer.");
+      console.error('Erreur lors de la confirmation :', error);
+      setTransactionStatus('failure');
+      setErrorMessage('La confirmation a échoué. Veuillez réessayer.');
     }
   };
 
   const handleCloseSnackbar = () => {
-    setErrorMessage("");
+    setErrorMessage('');
   };
 
   return (
@@ -150,12 +150,12 @@ const ConfirmTxModal = ({
         aria-labelledby="confirm-tx-dialog-title"
         BackdropProps={{
           sx: {
-            backdropFilter: "blur(8px)",
+            backdropFilter: 'blur(8px)',
           },
         }}
         PaperProps={{
           sx: {
-            elevation: "none !important",
+            elevation: 'none !important',
             p: isMobile ? 0 : 1,
             py: isMobile ? 1 : 0,
             backgroundColor: theme.palette.background.card,
@@ -165,21 +165,21 @@ const ConfirmTxModal = ({
       >
         <Box
           sx={{
-            position: "absolute",
+            position: 'absolute',
             top: 0,
             left: 0,
             right: 0,
-            height: "0.4rem",
+            height: '0.4rem',
             backgroundColor: theme.palette.primary.main,
           }}
         />
         {/* --------- Title --------- */}
         <DialogTitle
           sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            paddingRight: "48px",
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingRight: '48px',
             mt: 1,
           }}
         >
@@ -191,9 +191,9 @@ const ConfirmTxModal = ({
             <Typography
               variant="h6"
               color={theme.palette.text.primary}
-              sx={{ fontWeight: "bold" }}
+              sx={{ fontWeight: 'bold' }}
             >
-              qubic{" "}
+              qubic{' '}
               <span style={{ color: theme.palette.primary.main }}>connect</span>
             </Typography>
           </Box>
@@ -203,7 +203,7 @@ const ConfirmTxModal = ({
             aria-label="close"
             onClick={onClose}
             sx={{
-              position: "absolute",
+              position: 'absolute',
               right: 8,
               top: 8,
             }}
@@ -218,7 +218,7 @@ const ConfirmTxModal = ({
 
           <Box display="flex" flexDirection="column" gap={3}>
             {/* ---------- Transaction SUCCESS ---------- */}
-            {transactionStatus === "success" && (
+            {transactionStatus === 'success' && (
               <Box
                 display="flex"
                 flexDirection="column"
@@ -233,7 +233,7 @@ const ConfirmTxModal = ({
             )}
 
             {/* ---------- Transaction FAILURE ---------- */}
-            {transactionStatus === "failure" && (
+            {transactionStatus === 'failure' && (
               <Box
                 display="flex"
                 flexDirection="column"
@@ -248,7 +248,7 @@ const ConfirmTxModal = ({
             )}
 
             {/* ---------- Transaction PENDING ---------- */}
-            {transactionStatus === "pending" && confirmedTx && (
+            {transactionStatus === 'pending' && confirmedTx && (
               <>
                 <Box
                   display="flex"
@@ -256,29 +256,29 @@ const ConfirmTxModal = ({
                   alignItems="center"
                   mb={1}
                   sx={{
-                    "@keyframes spin": {
-                      "0%": { transform: "rotate(360deg)" },
-                      "100%": { transform: "rotate(0deg)" },
+                    '@keyframes spin': {
+                      '0%': { transform: 'rotate(360deg)' },
+                      '100%': { transform: 'rotate(0deg)' },
                     },
                   }}
                 >
                   <SyncIcon
                     color="primary"
-                    sx={{ fontSize: 30, animation: "spin 2s linear infinite" }}
+                    sx={{ fontSize: 30, animation: 'spin 2s linear infinite' }}
                   />
                 </Box>
 
                 <Typography
                   variant="body1"
                   color="text.primary"
-                  textAlign={"center"}
+                  textAlign={'center'}
                 >
                   Please wait for the transaction to be confirmed.
                 </Typography>
                 <Typography variant="body2" color="text.secondary" mt={1}>
                   Current Tick: {tick} / {confirmedTx.targetTick}
                 </Typography>
-                <Box sx={{ width: "100%" }}>
+                <Box sx={{ width: '100%' }}>
                   <LinearProgress
                     variant="determinate"
                     value={
@@ -298,7 +298,7 @@ const ConfirmTxModal = ({
                       height: 10,
                       borderRadius: 5,
                       backgroundColor: theme.palette.grey[300],
-                      "& .MuiLinearProgress-bar": {
+                      '& .MuiLinearProgress-bar': {
                         backgroundColor: theme.palette.primary.main,
                       },
                     }}
@@ -314,9 +314,9 @@ const ConfirmTxModal = ({
                   align="center"
                   sx={{
                     mt: 3,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
                 >
                   <WarningAmberIcon
@@ -327,12 +327,12 @@ const ConfirmTxModal = ({
                   <Box
                     component="span"
                     sx={{
-                      display: "inline-block",
-                      ml: "0.2rem",
-                      fontWeight: "bold",
-                      animation: "1s blink step-start infinite",
-                      "@keyframes blink": {
-                        "50%": { opacity: 0 },
+                      display: 'inline-block',
+                      ml: '0.2rem',
+                      fontWeight: 'bold',
+                      animation: '1s blink step-start infinite',
+                      '@keyframes blink': {
+                        '50%': { opacity: 0 },
                       },
                     }}
                   >
@@ -352,9 +352,9 @@ const ConfirmTxModal = ({
                 {/* Button group */}
                 <Box
                   sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "center",
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
                     gap: 4,
                     mt: 3,
                   }}
@@ -387,12 +387,12 @@ const ConfirmTxModal = ({
         open={!!errorMessage}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
         <Alert
           onClose={handleCloseSnackbar}
           severity="error"
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {errorMessage}
         </Alert>
