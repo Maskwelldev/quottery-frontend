@@ -11,6 +11,7 @@ import {
   ToggleButtonGroup,
 } from '@mui/material';
 import GamepadIcon from '@mui/icons-material/Gamepad';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { useQuotteryContext } from '../contexts/QuotteryContext';
 import { Typewriter } from 'react-simple-typewriter';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -328,8 +329,8 @@ function StartPage() {
             Create Bet
           </Button>
           <Button
-            onClick={() => navigate('/lottery/203')}
-            startIcon={<GamepadIcon />}
+            onClick={() => navigate('/lottery/204')}
+            startIcon={<EmojiEventsIcon />}
             variant='contained'
             color={
               theme.palette.mode === 'dark'

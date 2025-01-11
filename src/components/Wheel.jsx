@@ -67,7 +67,7 @@ const Wheel = ({
       canvas.setAttribute('id', canvasId.current);
       document.getElementById(wheelId.current)?.appendChild(canvas);
     }
-    canvas?.addEventListener('click', spin, false);
+    // canvas?.addEventListener('click', spin, false);
     canvas?.addEventListener('click', option, false);
 
     canvasContext = canvas?.getContext('2d');
@@ -86,11 +86,18 @@ const Wheel = ({
       const imageData = canvasContext.getImageData(x, y, 1, 1);
       const pixel = imageData.data; // [r, g, b, a]
       console.log('option', pixel[0]);
-      if (pixel[0] === 240) {
+      // TODO magic numbers
+      if (pixel[0] === 238) {
         onSelect(0);
       }
-      if (pixel[0] === 238) {
+      if (pixel[0] === 240) {
         onSelect(1);
+      }
+      if (pixel[0] === 0) {
+        onSelect(2);
+      }
+      if (pixel[0] === 52) {
+        onSelect(3);
       }
     } else {
       console.log('no canvas');

@@ -84,7 +84,7 @@ function LotteryPage() {
   const [bet, setBet] = useState(null);
   const [loading, setLoading] = useState(true);
   const { showSnackbar } = useSnackbar();
-  const [showConfirmTxModal, setShowConfirmTxModal] = useState(true);
+  const [showConfirmTxModal, setShowConfirmTxModal] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [amountOfBetSlots, setAmountOfBetSlots] = useState(0);
   const [optionCosts, setOptionCosts] = useState(0n); // BigInt
@@ -103,9 +103,10 @@ function LotteryPage() {
   const segColors = [
     '#EE4040',
     '#F0CF50',
-    '#815CD1',
-    '#3DA5E0',
+    '#0090FF',
     '#34A24F',
+    '#3DA5E0',
+    '#815CD1',
     '#F9AA1F',
     '#EC3F3F',
     '#FF9000',
@@ -582,15 +583,6 @@ function LotteryPage() {
         {bet.result === -1 && bet.is_active && (
           <Box sx={{ mb: 3, borderRadius: 3, mt: -2 }}>
             <CardContent>
-              <Typography
-                variant='body2'
-                fontWeight={400}
-                textAlign='start'
-                sx={{ mb: 3 }}
-              >
-                Choose Your Option :
-              </Typography>
-
               <Stack direction='column' spacing={3} alignItems='center'>
                 {bet.option_desc?.map((option, index) => (
                   <Button
