@@ -1039,7 +1039,7 @@
     "@babel/plugin-transform-modules-commonjs" "^7.25.9"
     "@babel/plugin-transform-typescript" "^7.25.9"
 
-"@babel/runtime@^7.11.2", "@babel/runtime@^7.12.5", "@babel/runtime@^7.16.3", "@babel/runtime@^7.18.3", "@babel/runtime@^7.25.7", "@babel/runtime@^7.26.0", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7":
+"@babel/runtime@^7.11.2", "@babel/runtime@^7.12.5", "@babel/runtime@^7.15.4", "@babel/runtime@^7.16.3", "@babel/runtime@^7.18.3", "@babel/runtime@^7.25.7", "@babel/runtime@^7.26.0", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7":
   version "7.26.0"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.26.0.tgz#8600c2f595f277c60815256418b85356a65173c1"
   integrity sha512-FDSOghenHTiToteC/QRlv2q3DhPZ/oOXTBoirfWNx1Cx3TMVcGWQtMMmQcSvb/JjpNeGzx8Pq/b4fKEJuWm1sw==
@@ -8143,6 +8143,13 @@ react-transition-group@^4.4.5:
     dom-helpers "^5.0.1"
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
+
+react-wheel-of-prizes@1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/react-wheel-of-prizes/-/react-wheel-of-prizes-1.0.9.tgz#3458b68668f5ef1e732949d28608a0af62e9e415"
+  integrity sha512-aqRfC8+RZwRPp3fJMmcefxLpRfV3dEfaLZP0NQhwy7vXpf0zuaxesZ+Ut5yFkWyzTuxI3b/qKVbtBB1Yy6OePw==
+  dependencies:
+    "@babel/runtime" "^7.15.4"
 
 react@^18.3.1:
   version "18.3.1"

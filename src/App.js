@@ -16,6 +16,7 @@ import { SnackbarProvider } from './contexts/SnackbarContext';
 import RandomBetsTicker from './components/layout/RandomBetsTicker';
 import './App.css';
 import { Box } from '@mui/material';
+import LotteryPage from './pages/LotteryPage';
 
 function App() {
   return (
@@ -26,14 +27,15 @@ function App() {
             <SnackbarProvider>
               <BrowserRouter>
                 <Header />
-                <Box component="main">
+                <Box component='main'>
                   <Routes>
                     /
-                    <Route path="/" element={<StartPage />} />
-                    <Route path="/bet/:id" element={<BetDetailsPage />} />
-                    <Route path="/create" element={<BetCreatePage />} />
-                    <Route path="/publish/:id" element={<BetPublishPage />} />
-                    <Route path="/user-bets" element={<UserBets />} />
+                    <Route path='/' element={<StartPage />} />
+                    <Route path='/bet/:id' element={<BetDetailsPage />} />
+                    <Route path='/create' element={<BetCreatePage />} />
+                    <Route path='/lottery/:id' element={<LotteryPage />} />
+                    <Route path='/publish/:id' element={<BetPublishPage />} />
+                    <Route path='/user-bets' element={<UserBets />} />
                   </Routes>
                 </Box>
                 {/* <RandomBetsTicker /> */}
