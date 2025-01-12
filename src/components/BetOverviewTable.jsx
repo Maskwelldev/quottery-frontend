@@ -81,6 +81,7 @@ function BetOverviewTable({ bets, onRowClick, loading }) {
   const theme = useTheme();
 
   const rows = useMemo(() => {
+    console.log('Bets data:', bets);
     return bets.map((bet) => {
       const slotsTaken = sumArray(bet.current_num_selection);
       const fee = `${sumArray(bet.oracle_fee)} %`;

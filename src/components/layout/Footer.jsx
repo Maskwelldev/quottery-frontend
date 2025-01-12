@@ -1,16 +1,16 @@
-import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import pkg from '../../../package.json';
-import logoShort from '../../assets/logo/logo-text-short.svg';
-import ServerConfigModal from '../qubic/connect/ServerConfigModal';
-import { Box, Typography, Link, useTheme, Divider } from '@mui/material';
+import { useState } from "react";
+import { useLocation } from "react-router-dom";
+import pkg from "../../../package.json";
+import logoShort from "../../assets/logo/logo-text-short.svg";
+import ServerConfigModal from "../qubic/connect/ServerConfigModal";
+import { Box, Typography, Link, useTheme, Divider } from "@mui/material";
 
 const Footer = () => {
   const { pathname } = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const theme = useTheme();
 
-  if (pathname.includes('/bet/')) {
+  if (pathname.includes("/bet/")) {
     return null;
   }
 
@@ -23,7 +23,7 @@ const Footer = () => {
       px={{ xs: 3, sm: 10, md: 15 }}
       py={4}
       display="flex"
-      flexDirection={{ xs: 'column', sm: 'row' }}
+      flexDirection={{ xs: "column", sm: "row" }}
       alignItems="center"
       justifyContent="space-between"
       gap={2}
@@ -33,7 +33,7 @@ const Footer = () => {
       <Box display="flex" gap={2} alignItems="center">
         <img src={logoShort} alt="Logo Qubic" width={60} />
         <Typography variant="body2">
-          {'\u00A9'} {new Date().getFullYear()} / Qubic
+          {"\u00A9"} {new Date().getFullYear()} / Qubic
         </Typography>
       </Box>
 
@@ -111,17 +111,17 @@ const Footer = () => {
       <Typography
         variant="body2"
         color="text.primary"
-        sx={{ cursor: 'pointer', mt: { xs: 2, sm: 0 } }}
+        sx={{ cursor: "pointer", mt: { xs: 2, sm: 0 } }}
         onClick={handleVersionClick}
         aria-label={`Version ${pkg.version}`}
       >
         Version {pkg.version}
       </Typography>
 
-      <ServerConfigModal
+      {/* <ServerConfigModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-      />
+      /> */}
     </Box>
   );
 };
