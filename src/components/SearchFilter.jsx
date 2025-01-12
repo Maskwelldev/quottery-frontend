@@ -16,8 +16,8 @@ import {
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 
-/** ModernDropdown
- *  Reusable dropdown component
+/** 
+ * ModernDropdown
  */
 const ModernDropdown = ({ options, selected, onSelect, icon }) => {
   const theme = useTheme();
@@ -128,8 +128,8 @@ const ModernDropdown = ({ options, selected, onSelect, icon }) => {
   );
 };
 
-/** SearchFilter
- *  Composant combinant une barre de recherche et un dropdown de filtre.
+/**
+ *  Search and filter component
  */
 const SearchFilter = ({
   searchTerm,

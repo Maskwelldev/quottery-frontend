@@ -7,7 +7,6 @@ import {
   useMediaQuery,
   IconButton,
 } from '@mui/material';
-import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import ConnectModal from './ConnectModal';

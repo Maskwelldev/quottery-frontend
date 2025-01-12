@@ -169,9 +169,10 @@ const BetPublishPage = () => {
           setShowConfirmTxModal(false);
           navigate('/');
         }}
+        
         tx={{
           title: 'Publish Result',
-          description: 'Are you sure you want to publish this result?',
+          description: 'Are you sure you want to publish this result ?',
         }}
         onConfirm={async () => {
           return await signPublishResultTx(bet.bet_id, selectedOption);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   AppBar,
   Toolbar,
@@ -7,13 +7,13 @@ import {
   Container,
   useTheme,
   useScrollTrigger,
-} from '@mui/material';
-import { Link } from 'react-router-dom';
-import { Brightness4, Brightness7 } from '@mui/icons-material';
-import ConnectLink from '../qubic/connect/ConnectLink';
-import { useThemeContext } from '../../contexts/ThemeContext';
-import logoLight from '../../assets/logo/logo-text-on-light.svg';
-import logoDark from '../../assets/logo/logo-text-on-dark.svg';
+} from "@mui/material";
+import { Link } from "react-router-dom";
+import { Brightness4, Brightness7 } from "@mui/icons-material";
+import ConnectLink from "../qubic/connect/ConnectLink";
+import { useThemeContext } from "../../contexts/ThemeContext";
+import logoLight from "../../assets/logo/logo-text-on-light.svg";
+import logoDark from "../../assets/logo/logo-text-on-dark.svg";
 
 const Header = () => {
   const theme = useTheme();
@@ -26,22 +26,22 @@ const Header = () => {
 
   const appBarStyles = {
     background: isDarkMode
-      ? 'rgba(23, 23, 23, 0.95)'
-      : 'rgba(255, 255, 255, 0.95)',
-    backdropFilter: 'blur(12px)',
-    WebkitBackdropFilter: 'blur(12px)',
-    boxShadow: scrollTrigger ? '0 8px 32px rgba(0, 0, 0, 0.12)' : 'none',
-    position: 'fixed',
+      ? "rgba(23, 23, 23, 0.95)"
+      : "rgba(255, 255, 255, 0.95)",
+    backdropFilter: "blur(12px)",
+    WebkitBackdropFilter: "blur(12px)",
+    boxShadow: scrollTrigger ? "0 8px 32px rgba(0, 0, 0, 0.12)" : "none",
+    position: "fixed",
     top: 0,
     left: 0,
-    width: '100%',
+    width: "100%",
     zIndex: theme.zIndex.appBar,
   };
 
   const toolbarStyles = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
     minHeight: { xs: 64, sm: 72 },
     px: { xs: 2, sm: 3, md: 4 },
   };

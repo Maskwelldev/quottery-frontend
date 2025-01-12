@@ -81,7 +81,7 @@ function BetDetailsPage() {
   const [bet, setBet] = useState(null);
   const [loading, setLoading] = useState(true);
   const { showSnackbar } = useSnackbar();
-  const [showConfirmTxModal, setShowConfirmTxModal] = useState(true);
+  const [showConfirmTxModal, setShowConfirmTxModal] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [amountOfBetSlots, setAmountOfBetSlots] = useState(0);
   const [optionCosts, setOptionCosts] = useState(0n); // BigInt
@@ -1048,11 +1048,13 @@ function BetDetailsPage() {
             setShowConfirmTxModal(false);
             updateBetDetails();
           }}
-          title={bet.full_description}
-          selectedOption={selectedOption}
-          amountOfBetSlots={amountOfBetSlots}
-          optionCosts={optionCosts}
-          betOptionDescription={bet.option_desc[selectedOption]}
+          descriptionData={{
+            description:bet.full_description,
+            selectedOption:selectedOption,
+            amountOfBetSlots:amountOfBetSlots,
+            optionCosts:optionCosts,
+            betOptionDescription:bet.option_desc[selectedOption]
+        }}
           tx={{
             description: 'Confirm to proceed ?',
           }}

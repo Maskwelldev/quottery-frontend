@@ -1,3 +1,4 @@
+// Work in progress
 import React, { useEffect, useState } from 'react';
 import {
   Typography,
@@ -245,7 +246,7 @@ const UserBets = () => {
           renderBets(annotatedActiveBets)
         ) : (
           <Typography variant={isMobile ? 'body2' : 'body1'}>
-            Aucun pari actif.
+            No active bets found.
           </Typography>
         )}
       </Box>

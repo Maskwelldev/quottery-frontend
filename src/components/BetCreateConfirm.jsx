@@ -1,7 +1,6 @@
 /* global BigInt */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
-  Box,
   Typography,
   Paper,
   Table,
@@ -14,14 +13,10 @@ import {
   List,
   ListItem,
   ListItemText,
-} from '@mui/material';
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import DescriptionIcon from '@mui/icons-material/Description';
-import EventIcon from '@mui/icons-material/Event';
-import StorageIcon from '@mui/icons-material/Storage';
-import DnsIcon from '@mui/icons-material/Dns';
-import { useQuotteryContext } from '../contexts/QuotteryContext';
-import { truncateMiddle, formatQubicAmount } from './qubic/util';
+} from "@mui/material";
+import { useQuotteryContext } from "../contexts/QuotteryContext";
+import { truncateMiddle, formatQubicAmount } from "./qubic/util";
+import { useMediaQuery } from "@mui/material";
 
 const TableRowItem = ({ icon, label, children }) => {
   const theme = useTheme();
@@ -31,10 +26,10 @@ const TableRowItem = ({ icon, label, children }) => {
         component="th"
         scope="row"
         sx={{
-          display: 'flex',
-          alignItems: 'center',
+          display: "flex",
+          alignItems: "center",
           gap: 1,
-          fontWeight: 'bold',
+          fontWeight: 500,
           color: theme.palette.text.secondary,
         }}
       >
@@ -51,6 +46,7 @@ const BetCreateConfirm = ({ bet }) => {
   const { issueBetTxCosts, balance, fetchBalance, walletPublicIdentity } =
     useQuotteryContext();
   const [hasEnoughBalance, setHasEnoughBalance] = useState(true);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     const calculateCosts = async () => {
@@ -70,54 +66,52 @@ const BetCreateConfirm = ({ bet }) => {
       elevation={0}
       sx={{
         p: 0,
-        bgcolor: 'inherit',
+        bgcolor: "inherit",
         borderRadius: 2,
       }}
     >
-      <Box
-        display="flex"
-        alignItems="center"
-        gap={1}
-        mb={3}
-        sx={{ color: theme.palette.primary.main }}
+      <Typography
+        variant={isSmallScreen ? "body1" : "h7"}
+        sx={{
+          fontWeight: 500,
+          color: theme.palette.text.secondary,
+          textAlign: "start",
+        }}
       >
-        <DnsIcon />
-        <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-          Détails du Pari
-        </Typography>
-      </Box>
+        Bet Details :
+      </Typography>
 
       <TableContainer>
         <Table>
           <TableBody>
             <TableRowItem
-              icon={<DescriptionIcon fontSize="small" />}
+              // icon={<DescriptionIcon fontSize="small" />}
               label="Description"
             >
               {bet.descriptionFull}
             </TableRowItem>
 
             <TableRowItem
-              icon={<EventIcon fontSize="small" />}
-              label="Date et Heure de Clôture"
+              // icon={<EventIcon fontSize="small" />}
+              label="Closing Date & Time"
             >
               {bet.closeDateTime.date} {bet.closeDateTime.time}
             </TableRowItem>
 
             <TableRowItem
-              icon={<EventIcon fontSize="small" />}
-              label="Date et Heure de Fin"
+              // icon={<EventIcon fontSize="small" />}
+              label="End Date & Time"
             >
               {bet.endDateTime.date} {bet.endDateTime.time}
             </TableRowItem>
 
             <TableRowItem
-              icon={<StorageIcon fontSize="small" />}
+              // icon={<StorageIcon fontSize="small" />}
               label="Options"
             >
-              <List dense sx={{ listStyleType: 'disc', pl: 2, m: 0 }}>
+              <List dense sx={{ listStyleType: "disc", pl: 2, m: 0 }}>
                 {bet.options.map((option, idx) => (
-                  <ListItem key={idx} sx={{ display: 'list-item', py: 0 }}>
+                  <ListItem key={idx} sx={{ display: "list-item", py: 0 }}>
                     <ListItemText primary={option} />
                   </ListItem>
                 ))}
@@ -125,12 +119,12 @@ const BetCreateConfirm = ({ bet }) => {
             </TableRowItem>
 
             <TableRowItem
-              icon={<StorageIcon fontSize="small" />}
-              label="Fournisseurs d'Oracles"
+              // icon={<StorageIcon fontSize="small" />}
+              label="Oracle Providers"
             >
-              <List dense sx={{ listStyleType: 'disc', pl: 2, m: 0 }}>
+              <List dense sx={{ listStyleType: "disc", pl: 2, m: 0 }}>
                 {bet.providers.map((provider, idx) => (
-                  <ListItem key={idx} sx={{ display: 'list-item', py: 0 }}>
+                  <ListItem key={idx} sx={{ display: "list-item", py: 0 }}>
                     <ListItemText
                       primary={`${truncateMiddle(provider.publicId, 40)} – ${
                         provider.fee
@@ -142,39 +136,39 @@ const BetCreateConfirm = ({ bet }) => {
             </TableRowItem>
 
             <TableRowItem
-              icon={<AccountBalanceIcon fontSize="small" />}
-              label="Nombre de Qus par Slot"
+              // icon={<AccountBalanceIcon fontSize="small" />}
+              label="Qus Per Slot"
             >
               {bet.amountPerSlot.toLocaleString()} QUBIC
             </TableRowItem>
 
             <TableRowItem
-              icon={<AccountBalanceIcon fontSize="small" />}
-              label="Max. Slots par Option"
+              // icon={<AccountBalanceIcon fontSize="small" />}
+              label="Max Slots Per Option"
             >
               {bet.maxBetSlots}
             </TableRowItem>
 
             <TableRowItem
-              icon={<AccountBalanceIcon fontSize="small" />}
-              label="Frais de Création"
+              // icon={<AccountBalanceIcon fontSize="small" />}
+              label="Creation Fees"
             >
               {bet.costs.toLocaleString()} QUBIC
             </TableRowItem>
 
             {balance !== null && (
               <TableRowItem
-                icon={<AccountBalanceIcon fontSize="small" />}
-                label="Votre Solde"
+                // icon={<AccountBalanceIcon fontSize="small" />}
+                label="Your Balance"
               >
                 <Typography variant="body2">
                   {formatQubicAmount(balance)} QUBIC
                 </Typography>
                 {!hasEnoughBalance && (
                   <Alert severity="error" sx={{ mt: 1 }}>
-                    Vous n'avez pas assez de solde pour créer ce pari. Votre
-                    solde : {formatQubicAmount(balance)} QUBIC, frais de
-                    création : {formatQubicAmount(bet.costs)} QUBIC.
+                    Insufficient balance to create this bet. Your balance:{" "}
+                    {formatQubicAmount(balance)} QUBIC, creation fees:{" "}
+                    {formatQubicAmount(bet.costs)} QUBIC.
                   </Alert>
                 )}
               </TableRowItem>

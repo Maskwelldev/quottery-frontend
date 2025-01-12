@@ -13,7 +13,6 @@ import { QubicConnectProvider } from './components/qubic/connect/QubicConnectCon
 import { QuotteryProvider } from './contexts/QuotteryContext';
 import UserBets from './components/UserBets';
 import { SnackbarProvider } from './contexts/SnackbarContext';
-import RandomBetsTicker from './components/layout/RandomBetsTicker';
 import './App.css';
 import { Box } from '@mui/material';
 
@@ -36,7 +35,6 @@ function App() {
                     <Route path="/user-bets" element={<UserBets />} />
                   </Routes>
                 </Box>
-                {/* <RandomBetsTicker /> */}
                 <Footer />
               </BrowserRouter>
             </SnackbarProvider>
