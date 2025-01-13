@@ -20,7 +20,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import GroupWorkIcon from "@mui/icons-material/GroupWork";
 import DescriptionIcon from "@mui/icons-material/Description";
-import { formatQubicAmount } from "./qubic/util";
+import { formatQubicAmount, truncateMiddle } from "./qubic/util";
 
 const CreateBetDetails = ({
   title,
@@ -70,7 +70,12 @@ const CreateBetDetails = ({
     {
       icon: <PeopleIcon color='action' />,
       label: "Providers",
-      value: providers?.join(", "),
+      value: providers
+        ?.map(
+          (provider) =>
+            `${truncateMiddle(provider.publicId, 40)} (Fee: ${provider.fee}%)`
+        )
+        .join(", "),
     },
     {
       icon: <MonetizationOnIcon color='action' />,

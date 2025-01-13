@@ -18,34 +18,47 @@ const statusIcons = {
     label: "Active",
     color: "#4CAF50",
     darkColor: "#70CF97",
+    sortValue: 4,
   },
   locked: {
     icon: LockIcon,
     label: "Locked",
     color: "#E53935",
     darkColor: "#FF6370",
+    sortValue: 3,
   },
   published: {
     icon: EmojiEventsIcon,
     label: "Published",
     color: "#1565C0",
     darkColor: "#61f0fe",
+    sortValue: 2,
   },
   waiting: {
     icon: HelpIcon,
     label: "Waiting",
     color: "#FFB300",
     darkColor: "#FFDE6B",
+    sortValue: 1,
   },
   historical: {
     icon: EmojiEventsIcon,
     label: "Historical",
     color: "#9E9E9E",
     darkColor: "#B0BEC5",
+    sortValue: 0,
   },
 };
 
-const getHotLevelIcon = (totalQus, slotsTaken) => {
+const getPopularityLevel = (totalQus, slotsTaken) => {
+  if (totalQus >= 1_000_000_000 || slotsTaken >= 100) return 4;
+  if (totalQus >= 500_000_000 || slotsTaken >= 50) return 3;
+  if (totalQus >= 100_000_000 || slotsTaken >= 10) return 2;
+  if (totalQus >= 10_000_000 || slotsTaken >= 5) return 1;
+  return 0;
+};
+
+const getHotLevelIcon = (popularityLevel) => {
   const darkModeColors = {
     diamond: "#61f0fe",
     fire: "#FF7043",
@@ -54,55 +67,83 @@ const getHotLevelIcon = (totalQus, slotsTaken) => {
     neutral: "#9E9E9E",
   };
 
-  if (totalQus >= 1_000_000_000 || slotsTaken >= 100) {
-    return (
-      <DiamondIcon sx={{ color: darkModeColors.diamond, fontSize: "1.2rem" }} />
-    );
+  switch (popularityLevel) {
+    case 4:
+      return (
+        <DiamondIcon
+          sx={{ color: darkModeColors.diamond, fontSize: "1.2rem" }}
+        />
+      );
+    case 3:
+      return (
+        <LocalFireDepartmentIcon
+          sx={{ color: darkModeColors.fire, fontSize: "1.2rem" }}
+        />
+      );
+    case 2:
+      return (
+        <WhatshotIcon sx={{ color: darkModeColors.hot, fontSize: "1.2rem" }} />
+      );
+    case 1:
+      return (
+        <EggIcon sx={{ color: darkModeColors.warm, fontSize: "1.2rem" }} />
+      );
+    default:
+      return (
+        <EggIcon sx={{ color: darkModeColors.neutral, fontSize: "1.2rem" }} />
+      );
   }
-  if (totalQus >= 500_000_000 || slotsTaken >= 50) {
-    return (
-      <LocalFireDepartmentIcon
-        sx={{ color: darkModeColors.fire, fontSize: "1.2rem" }}
-      />
-    );
-  }
-  if (totalQus >= 100_000_000 || slotsTaken >= 10) {
-    return (
-      <WhatshotIcon sx={{ color: darkModeColors.hot, fontSize: "1.2rem" }} />
-    );
-  }
-  if (totalQus >= 10_000_000 || slotsTaken >= 5) {
-    return <EggIcon sx={{ color: darkModeColors.warm, fontSize: "1.2rem" }} />;
-  }
-  return <EggIcon sx={{ color: darkModeColors.neutral, fontSize: "1.2rem" }} />;
 };
 
 function BetOverviewTable({ bets, onRowClick, loading }) {
   const theme = useTheme();
 
   const rows = useMemo(() => {
-    console.log("Bets data:", bets);
     return bets.map((bet) => {
       const slotsTaken = sumArray(bet.current_num_selection);
-      const fee = `${sumArray(bet.oracle_fee)} %`;
-      const burn = "2 %";
+      const popularityLevel = getPopularityLevel(
+        bet.current_total_qus,
+        slotsTaken
+      );
+      const sData = statusIcons[bet.status] || null;
+      const [year, month, day] = bet.close_date
+        .split("-")
+        .map((num) => num.padStart(2, "0"));
+      const formattedDate = `20${year}-${month}-${day}`;
+      const closingDateTime = new Date(
+        `${formattedDate}T${bet.close_time}`
+      ).getTime();
       const closingDate = `${formatDate(bet.close_date)} ${bet.close_time.slice(
         0,
         -3
       )}`;
-      const sData = statusIcons[bet.status] || null;
+
+      const totalQus = parseFloat(bet.current_total_qus) || 0;
 
       return {
         id: bet.bet_id,
         bet_id: bet.bet_id,
-        status: sData,
+        status: {
+          value: sData?.sortValue || -1,
+          statusData: sData,
+          display: bet.status,
+        },
         description: (bet.full_description || bet.bet_desc)?.slice(0, 64),
-        closing: closingDate,
+        closing: {
+          value: closingDateTime,
+          display: closingDate,
+        },
         slots: slotsTaken,
-        fee: fee,
-        burn: burn,
-        total_qus: formatQubicAmount(bet.current_total_qus),
-        popularity: getHotLevelIcon(bet.current_total_qus, slotsTaken),
+        fee: sumArray(bet.oracle_fee),
+        burn: 2,
+        total_qus: {
+          value: totalQus,
+          display: formatQubicAmount(bet.current_total_qus),
+        },
+        popularity: {
+          value: popularityLevel,
+          display: getHotLevelIcon(popularityLevel),
+        },
       };
     });
   }, [bets]);
@@ -113,6 +154,7 @@ function BetOverviewTable({ bets, onRowClick, loading }) {
       headerName: "Status",
       width: 120,
       sortable: true,
+      sortComparator: (v1, v2) => v1.value - v2.value,
       renderHeader: () => (
         <Box
           display='flex'
@@ -126,7 +168,7 @@ function BetOverviewTable({ bets, onRowClick, loading }) {
         </Box>
       ),
       renderCell: (params) => {
-        const sData = params.value;
+        const sData = params.value.statusData;
         if (!sData) return "—";
         const IconComponent = sData.icon;
         return (
@@ -177,6 +219,7 @@ function BetOverviewTable({ bets, onRowClick, loading }) {
       headerName: "Closing (UTC)",
       width: 180,
       sortable: true,
+      sortComparator: (v1, v2) => v1.value - v2.value,
       renderHeader: () => (
         <Box display='flex' alignItems='center' gap={0.5}>
           <Typography variant='subtitle2' fontWeight='bold'>
@@ -191,7 +234,7 @@ function BetOverviewTable({ bets, onRowClick, loading }) {
           justifyContent='center'
           height='100%'
         >
-          <Typography variant='body2'>{params.value}</Typography>
+          <Typography variant='body2'>{params.value.display}</Typography>
         </Box>
       ),
       headerAlign: "center",
@@ -202,6 +245,7 @@ function BetOverviewTable({ bets, onRowClick, loading }) {
       headerName: "Slots",
       width: 100,
       sortable: true,
+      type: "number",
       renderHeader: () => (
         <Box
           display='flex'
@@ -232,6 +276,7 @@ function BetOverviewTable({ bets, onRowClick, loading }) {
       headerName: "Fee",
       width: 100,
       sortable: true,
+      type: "number",
       renderHeader: () => (
         <Box
           display='flex'
@@ -251,7 +296,7 @@ function BetOverviewTable({ bets, onRowClick, loading }) {
           justifyContent='center'
           height='100%'
         >
-          <Typography variant='body2'>{params.value}</Typography>
+          <Typography variant='body2'>{params.value} %</Typography>
         </Box>
       ),
       headerAlign: "center",
@@ -262,6 +307,7 @@ function BetOverviewTable({ bets, onRowClick, loading }) {
       headerName: "Burn (%)",
       width: 100,
       sortable: true,
+      type: "number",
       renderHeader: () => (
         <Box
           display='flex'
@@ -281,7 +327,7 @@ function BetOverviewTable({ bets, onRowClick, loading }) {
           justifyContent='center'
           height='100%'
         >
-          <Typography variant='body2'>{params.value}</Typography>
+          <Typography variant='body2'>{params.value} %</Typography>
         </Box>
       ),
       headerAlign: "center",
@@ -292,6 +338,7 @@ function BetOverviewTable({ bets, onRowClick, loading }) {
       headerName: "Total Qubic",
       width: 160,
       sortable: true,
+      sortComparator: (v1, v2) => v1.value - v2.value,
       renderHeader: () => (
         <Box
           display='flex'
@@ -311,7 +358,7 @@ function BetOverviewTable({ bets, onRowClick, loading }) {
           justifyContent='center'
           height='100%'
         >
-          <Typography variant='body2'>{params.value}</Typography>
+          <Typography variant='body2'>{params.value.display}</Typography>
         </Box>
       ),
       headerAlign: "center",
@@ -321,7 +368,8 @@ function BetOverviewTable({ bets, onRowClick, loading }) {
       field: "popularity",
       headerName: "Popularity",
       width: 150,
-      sortable: false,
+      sortable: true,
+      sortComparator: (v1, v2) => v2.value - v1.value,
       renderHeader: () => (
         <Box
           display='flex'
@@ -341,7 +389,7 @@ function BetOverviewTable({ bets, onRowClick, loading }) {
           justifyContent='center'
           height='100%'
         >
-          {params.value}
+          {params.value.display}
         </Box>
       ),
       headerAlign: "center",
@@ -376,8 +424,12 @@ function BetOverviewTable({ bets, onRowClick, loading }) {
           disableRowSelectionOnClick
           autoHeight
           loading={loading}
-          rowsPerPageOptions={[10, 25, 50, 100]}
-          pageSize={10}
+          initialState={{
+            pagination: {
+              pageSize: 10,
+            },
+          }}
+          pageSizeOptions={[10, 25, 50, 100]}
           onRowClick={(params) => onRowClick(params.row.bet_id)}
         />
       </Box>

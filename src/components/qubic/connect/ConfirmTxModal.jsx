@@ -22,7 +22,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SyncIcon from "@mui/icons-material/Sync";
 import { useQubicConnect } from "./QubicConnectContext";
-import AnotherBetDetails from "../../CreateBetDetails";
+import CreateBetDetails from "../../CreateBetDetails";
 import BetDetails from "../../ConfirmBetDetails";
 
 /**
@@ -137,9 +137,9 @@ const ConfirmTxModal = ({
       setInitialTick(initTick);
       setConfirmedTx(cTx);
     } catch (error) {
-      console.error("Erreur lors du démarrage de la transaction :", error);
+      console.error("Error while starting tick fetch interval :", error);
       setTransactionStatus("failure");
-      setErrorMessage("La transaction a échoué. Veuillez réessayer.");
+      setErrorMessage("The transaction could not be confirmed. Please retry.");
     }
   };
 
@@ -155,9 +155,9 @@ const ConfirmTxModal = ({
         );
       }
     } catch (error) {
-      console.error("Erreur lors de la confirmation :", error);
+      console.error("Error while confirming transaction :", error);
       setTransactionStatus("failure");
-      setErrorMessage("La confirmation a échoué. Veuillez réessayer.");
+      setErrorMessage("The transaction could not be confirmed. Please retry.");
     }
   };
 
@@ -281,7 +281,7 @@ const ConfirmTxModal = ({
               >
                 <CheckCircleIcon color='success' sx={{ fontSize: 36, mt: 2 }} />
                 <Typography variant='h6' color='success.main'>
-                  Transaction réussie !
+                  Transaction successful.
                 </Typography>
               </Box>
             )}
@@ -296,7 +296,7 @@ const ConfirmTxModal = ({
               >
                 <CancelIcon color='error' sx={{ fontSize: 36, mt: 2 }} />
                 <Typography variant='h6' color='error.main'>
-                  Transaction échouée.
+                  Transaction failed.
                 </Typography>
               </Box>
             )}
@@ -374,7 +374,7 @@ const ConfirmTxModal = ({
                 )}
 
                 {isCreate && (
-                  <AnotherBetDetails
+                  <CreateBetDetails
                     title={descriptionData.description}
                     closeDate={descriptionData.closeDate}
                     closeTime={descriptionData.closeTime}
