@@ -41,14 +41,14 @@ import dayjs from "dayjs";
 function LabelWithPopover({ label, description, required = false }) {
   const theme = useTheme();
   return (
-    <Box display="flex" alignItems="center" gap={1} mb={0.5}>
-      <Typography variant="subtitle1" fontWeight="bold">
+    <Box display='flex' alignItems='center' gap={1} mb={0.5}>
+      <Typography variant='subtitle1' fontWeight='bold'>
         {label}{" "}
         {required && <span style={{ color: theme.palette.error.main }}>*</span>}
       </Typography>
-      <Tooltip title={description} placement="right">
+      <Tooltip title={description} placement='right'>
         <InfoOutlined
-          fontSize="small"
+          fontSize='small'
           sx={{ color: theme.palette.secondary.main, cursor: "help" }}
         />
       </Tooltip>
@@ -85,7 +85,7 @@ function BetCreatePage() {
 
   const [bet, setBet] = useState({
     // We don't hash the description here, we hash it in the final betToSend object
-    description: "", 
+    description: "",
     closeDate: dayjs().add(1, "day").format("YYYY-MM-DD"),
     closeTime: "12:00",
     endDate: dayjs().add(2, "day").format("YYYY-MM-DD"),
@@ -274,7 +274,7 @@ function BetCreatePage() {
     const finalHash = `${firstPartHash}${secondPartHash}`;
     const betDescriptionReference = `###${finalHash}`;
 
-    // Description upload 
+    // Description upload
     const uploadSuccess = await uploadDescription(betDescInput, finalHash);
     if (!uploadSuccess) {
       console.error("Failed to upload description");
@@ -302,7 +302,9 @@ function BetCreatePage() {
       showSnackbar(
         `You do not have enough balance to create this bet. Your balance: ${formatQubicAmount(
           balance
-        )} Qubic. Bet creation fee: ${formatQubicAmount(betCreationFee)} Qubic.`,
+        )} Qubic. Bet creation fee: ${formatQubicAmount(
+          betCreationFee
+        )} Qubic.`,
         "error"
       );
       return;
@@ -377,7 +379,7 @@ function BetCreatePage() {
 
   return (
     <Container
-      maxWidth="md"
+      maxWidth='md'
       sx={{ mt: theme.spacing(10), mb: theme.spacing(4) }}
     >
       <Paper
@@ -396,15 +398,15 @@ function BetCreatePage() {
         }}
       >
         {/* HEADER */}
-        <Box display="flex" alignItems="center" mb={3}>
+        <Box display='flex' alignItems='center' mb={3}>
           <IconButton
-            aria-label="go back"
+            aria-label='go back'
             onClick={() => navigate("/")}
             sx={{ mr: 2 }}
           >
             <ArrowBackIcon />
           </IconButton>
-          <Typography variant="h5" color="text.primary" fontWeight="bold">
+          <Typography variant='h5' color='text.primary' fontWeight='bold'>
             Create New Bet
           </Typography>
         </Box>
@@ -417,16 +419,16 @@ function BetCreatePage() {
             {/* Description */}
             <Grid item xs={12}>
               <LabelWithPopover
-                label="Bet Description"
-                description="This is the bet description with a maximum of 100 characters."
+                label='Bet Description'
+                description='This is the bet description with a maximum of 100 characters.'
                 required
               />
               <TextField
                 fullWidth
-                variant="outlined"
+                variant='outlined'
                 value={betDescInput}
                 onChange={(e) => setBetDescInput(e.target.value)}
-                placeholder="Enter bet description"
+                placeholder='Enter bet description'
                 error={Boolean(errors.description)}
                 helperText={errors.description}
                 sx={{
@@ -434,7 +436,7 @@ function BetCreatePage() {
                   backgroundColor: theme.palette.background.default,
                 }}
               />
-              <Typography variant="body2" align="right" color="text.secondary">
+              <Typography variant='body2' align='right' color='text.secondary'>
                 {betDescInput.length}/100
               </Typography>
             </Grid>
@@ -442,14 +444,14 @@ function BetCreatePage() {
             {/* Close Date/Time */}
             <Grid item xs={12} md={6}>
               <LabelWithPopover
-                label="Close Date and Time (UTC)"
-                description="The date/time when the bet closes."
+                label='Close Date and Time (UTC)'
+                description='The date/time when the bet closes.'
                 required
               />
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Box display="flex" gap={2} mt={1}>
+                <Box display='flex' gap={2} mt={1}>
                   <DatePicker
-                    label="Close Date"
+                    label='Close Date'
                     value={bet.closeDate ? dayjs(bet.closeDate) : null}
                     onChange={(newValue) =>
                       setBet({
@@ -474,7 +476,7 @@ function BetCreatePage() {
                     }}
                   />
                   <TimePicker
-                    label="Close Time"
+                    label='Close Time'
                     value={bet.closeTime ? dayjs(bet.closeTime, "HH:mm") : null}
                     onChange={(newValue) =>
                       setBet({
@@ -502,14 +504,14 @@ function BetCreatePage() {
             {/* End Date/Time */}
             <Grid item xs={12} md={6}>
               <LabelWithPopover
-                label="End Date and Time (UTC)"
-                description="The date/time when providers can publish results."
+                label='End Date and Time (UTC)'
+                description='The date/time when providers can publish results.'
                 required
               />
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Box display="flex" gap={2} mt={1}>
+                <Box display='flex' gap={2} mt={1}>
                   <DatePicker
-                    label="End Date"
+                    label='End Date'
                     value={bet.endDate ? dayjs(bet.endDate) : null}
                     onChange={(newValue) =>
                       setBet({
@@ -532,7 +534,7 @@ function BetCreatePage() {
                     }}
                   />
                   <TimePicker
-                    label="End Time"
+                    label='End Time'
                     value={bet.endTime ? dayjs(bet.endTime, "HH:mm") : null}
                     onChange={(newValue) =>
                       setBet({
@@ -561,7 +563,7 @@ function BetCreatePage() {
             {/* Date / Time Error */}
             {(errors.closeDateTime || errors.endDateTime) && (
               <Grid item xs={12}>
-                <Alert severity="error" sx={{ mt: -2 }}>
+                <Alert severity='error' sx={{ mt: -2 }}>
                   <AlertTitle>Date/Time Error</AlertTitle>
                   {errors.closeDateTime && <div>{errors.closeDateTime}</div>}
                   {errors.endDateTime && <div>{errors.endDateTime}</div>}
@@ -572,21 +574,21 @@ function BetCreatePage() {
             {/* Options */}
             <Grid item xs={12}>
               <LabelWithPopover
-                label="Bet Options (min. 2)"
-                description="Add up to 8 options, each <= 32 chars."
+                label='Bet Options (min. 2)'
+                description='Add up to 8 options, each <= 32 chars.'
                 required
               />
               {bet.options.map((opt, index) => (
                 <Box
                   key={index}
-                  display="flex"
-                  alignItems="center"
+                  display='flex'
+                  alignItems='center'
                   gap={1}
                   mt={1}
                 >
                   <TextField
                     fullWidth
-                    variant="outlined"
+                    variant='outlined'
                     value={opt}
                     onChange={(e) => {
                       const newOpts = [...bet.options];
@@ -598,7 +600,7 @@ function BetCreatePage() {
                   />
                   {bet.options.length > 2 && (
                     <IconButton
-                      color="error"
+                      color='error'
                       onClick={() => removeOption(index)}
                     >
                       <Close />
@@ -622,7 +624,7 @@ function BetCreatePage() {
                 </Button>
               )}
               {errors.options && (
-                <Alert severity="error" sx={{ mt: 2 }}>
+                <Alert severity='error' sx={{ mt: 2 }}>
                   {errors.options}
                 </Alert>
               )}
@@ -631,22 +633,22 @@ function BetCreatePage() {
             {/* Providers */}
             <Grid item xs={12}>
               <LabelWithPopover
-                label="Oracle Providers"
-                description="List providers (60-char publicId) and their fees."
+                label='Oracle Providers'
+                description='List providers (60-char publicId) and their fees.'
                 required
               />
               {bet.providers.map((p, index) => (
                 <Box
                   key={index}
-                  display="flex"
-                  alignItems="center"
+                  display='flex'
+                  alignItems='center'
                   gap={1}
                   mt={1}
                 >
                   <TextField
-                    label="Provider PublicId"
-                    placeholder="60-char ID"
-                    variant="outlined"
+                    label='Provider PublicId'
+                    placeholder='60-char ID'
+                    variant='outlined'
                     value={p.publicId}
                     onChange={(e) => {
                       const newProv = [...bet.providers];
@@ -660,9 +662,9 @@ function BetCreatePage() {
                     }}
                   />
                   <TextField
-                    label="Fee (%)"
-                    variant="outlined"
-                    type="number"
+                    label='Fee (%)'
+                    variant='outlined'
+                    type='number'
                     value={p.fee}
                     onChange={(e) => {
                       const newProv = [...bet.providers];
@@ -671,7 +673,7 @@ function BetCreatePage() {
                     }}
                     InputProps={{
                       endAdornment: (
-                        <InputAdornment position="end"></InputAdornment>
+                        <InputAdornment position='end'></InputAdornment>
                       ),
                     }}
                     error={Boolean(errors.providers)}
@@ -682,7 +684,7 @@ function BetCreatePage() {
                   />
                   {bet.providers.length > 1 && (
                     <IconButton
-                      color="error"
+                      color='error'
                       onClick={() => removeProvider(index)}
                     >
                       <Close />
@@ -706,7 +708,7 @@ function BetCreatePage() {
                 </Button>
               )}
               {errors.providers && (
-                <Alert severity="error" sx={{ mt: 2 }}>
+                <Alert severity='error' sx={{ mt: 2 }}>
                   {errors.providers}
                 </Alert>
               )}
@@ -715,7 +717,7 @@ function BetCreatePage() {
             {/* Amount per slot */}
             <Grid item xs={12} md={6}>
               <LabelWithPopover
-                label="Amount of Qubics per Slot"
+                label='Amount of Qubics per Slot'
                 description={`Min amount is ${formatQubicAmount(
                   minBetSlotAmount
                 )} qubics.`}
@@ -723,7 +725,7 @@ function BetCreatePage() {
               />
               <TextField
                 fullWidth
-                type="number"
+                type='number'
                 value={bet.amountPerSlot}
                 onChange={(e) =>
                   setBet({ ...bet, amountPerSlot: e.target.value })
@@ -740,13 +742,13 @@ function BetCreatePage() {
             {/* Max bet slots */}
             <Grid item xs={12} md={6}>
               <LabelWithPopover
-                label="Max Number of Bet Slots"
-                description="Up to 1024 slots per option."
+                label='Max Number of Bet Slots'
+                description='Up to 1024 slots per option.'
                 required
               />
               <TextField
                 fullWidth
-                type="number"
+                type='number'
                 value={bet.maxBetSlots}
                 onChange={(e) =>
                   setBet({ ...bet, maxBetSlots: e.target.value })
@@ -761,16 +763,16 @@ function BetCreatePage() {
             </Grid>
           </Grid>
 
-          <Box mt={4} display="flex" justifyContent="center">
+          <Box mt={4} display='flex' justifyContent='center'>
             <Button
-              variant="outlined"
-              color="primary"
-              type="submit"
-              size="large"
+              variant='outlined'
+              color='primary'
+              type='submit'
+              size='large'
               startIcon={<RocketLaunchIcon />}
             >
               <Typography
-                variant="button"
+                variant='button'
                 sx={{ fontWeight: "bold", fontSize: "0.9rem" }}
               >
                 Create Bet

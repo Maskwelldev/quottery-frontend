@@ -5,38 +5,38 @@ import React, {
   useEffect,
   useReducer,
   useState,
-} from 'react';
-import { QubicHelper } from '@qubic-lib/qubic-ts-library/dist/qubicHelper';
-import Crypto from '@qubic-lib/qubic-ts-library/dist/crypto';
-import { useQubicConnect } from '../components/qubic/connect/QubicConnectContext';
+} from "react";
+import { QubicHelper } from "@qubic-lib/qubic-ts-library/dist/qubicHelper";
+import Crypto from "@qubic-lib/qubic-ts-library/dist/crypto";
+import { useQubicConnect } from "../components/qubic/connect/QubicConnectContext";
 import {
   fetchActiveBets,
   fetchBetDetail,
   fetchNodeInfo,
   fetchAndVerifyBetDescription,
   fetchParticipantsForBetOption,
-} from '../components/qubic/util/betApi';
-import { excludedBetIds } from '../components/qubic/util/commons';
-import { useConfig } from './ConfigContext';
+} from "../components/qubic/util/betApi";
+import { excludedBetIds } from "../components/qubic/util/commons";
+import { useConfig } from "./ConfigContext";
 
 const QuotteryContext = createContext();
 
 const betReducer = (state, action) => {
   switch (action.type) {
-    case 'SET_CORE_BETS':
+    case "SET_CORE_BETS":
       return {
         ...state,
         activeBets: action.payload.activeBets,
         lockedBets: action.payload.lockedBets,
         waitingForResultsBets: action.payload.waitingForResultsBets,
       };
-    case 'SET_HISTORICAL_BETS':
+    case "SET_HISTORICAL_BETS":
       return {
         ...state,
         historicalBets: action.payload.bets,
         historicalPagination: action.payload.pagination,
       };
-    case 'SET_NODE_INFO':
+    case "SET_NODE_INFO":
       return {
         ...state,
         nodeInfo: action.payload,
@@ -56,16 +56,16 @@ export const QuotteryProvider = ({ children }) => {
     nodeInfo: {},
   });
   const [loading, setLoading] = useState(true);
-  const [betsFilter, setBetsFilter] = useState('active');
+  const [betsFilter, setBetsFilter] = useState("active");
   const { wallet, broadcastTx, getTick } = useQubicConnect();
   const [balance, setBalance] = useState(null);
-  const [walletPublicIdentity, setWalletPublicIdentity] = useState('');
+  const [walletPublicIdentity, setWalletPublicIdentity] = useState("");
   const qHelper = new QubicHelper();
   const [coreNodeBetIds, setCoreNodeBetIds] = useState([]);
   const [historicalLoading, setHistoricalLoading] = useState(false);
   const [currentFilterOption, setCurrentFilterOption] = useState(1); // 0 = All, 1 = Active, 2 = Locked, 3 = Inactive
   const [currentPage, setCurrentPage] = useState(1);
-  const [inputPage, setInputPage] = useState('');
+  const [inputPage, setInputPage] = useState("");
   const { httpEndpoint, backendUrl } = useConfig();
 
   // Fetch bets using the Qubic HTTP API
@@ -97,7 +97,7 @@ export const QuotteryProvider = ({ children }) => {
             );
 
             const closeDate = new Date(
-              '20' + bet.close_date + 'T' + bet.close_time + 'Z'
+              "20" + bet.close_date + "T" + bet.close_time + "Z"
             );
             const now = new Date();
             bet.is_active = now <= closeDate;
@@ -106,13 +106,13 @@ export const QuotteryProvider = ({ children }) => {
           })
         );
       } catch (error) {
-        console.log('Error occurred while fetching bets with Qubic Http.');
+        console.log("Error occurred while fetching bets with Qubic Http.");
         console.log(error);
         if (i < maxRetryCount - 1) {
-          console.log('Retrying...');
+          console.log("Retrying...");
         } else {
           console.log(
-            'Unable to fetch bets with Qubic Http API. Falling back to using backend API.'
+            "Unable to fetch bets with Qubic Http API. Falling back to using backend API."
           );
           return null;
         }
@@ -127,11 +127,11 @@ export const QuotteryProvider = ({ children }) => {
     let paginationInfo = { currentPage: 1, totalPages: 1 };
 
     try {
-      const backendData = await fetchBackendApiBets('inactive', page, 10);
+      const backendData = await fetchBackendApiBets("inactive", page, 10);
       backendBets = backendData.bets;
       paginationInfo = backendData.pagination;
     } catch (error) {
-      console.error('Error fetching bets from backend API:', error);
+      console.error("Error fetching bets from backend API:", error);
     }
 
     const backendBetsUnique = backendBets.filter(
@@ -140,7 +140,7 @@ export const QuotteryProvider = ({ children }) => {
     );
 
     dispatch({
-      type: 'SET_HISTORICAL_BETS',
+      type: "SET_HISTORICAL_BETS",
       payload: { bets: backendBetsUnique, pagination: paginationInfo },
     });
     setHistoricalLoading(false);
@@ -172,7 +172,7 @@ export const QuotteryProvider = ({ children }) => {
         bet.current_num_selection = JSON.parse(bet.current_num_selection);
         bet.oracle_vote = JSON.parse(bet.oracle_vote);
         const closeDate = new Date(
-          '20' + bet.close_date + 'T' + bet.close_time + 'Z'
+          "20" + bet.close_date + "T" + bet.close_time + "Z"
         );
         const now = new Date();
         bet.is_active = now <= closeDate;
@@ -208,8 +208,8 @@ export const QuotteryProvider = ({ children }) => {
       bet1.open_date === bet2.open_date &&
       bet1.close_date === bet2.close_date &&
       bet1.end_date === bet2.end_date &&
-      bet1.open_time.split(':').slice(0, 2).join(':') ===
-        bet2.open_time.split(':').slice(0, 2).join(':') &&
+      bet1.open_time.split(":").slice(0, 2).join(":") ===
+        bet2.open_time.split(":").slice(0, 2).join(":") &&
       bet1.close_time === bet2.close_time &&
       bet1.end_time === bet2.end_time &&
       bet1.amount_per_bet_slot === bet2.amount_per_bet_slot &&
@@ -235,7 +235,7 @@ export const QuotteryProvider = ({ children }) => {
     try {
       qubicApiBets = await fetchQubicHttpApiBets();
     } catch (error) {
-      console.error('Error fetching bets from Qubic HTTP API:', error);
+      console.error("Error fetching bets from Qubic HTTP API:", error);
       qubicApiAvailable = false;
     }
 
@@ -249,10 +249,10 @@ export const QuotteryProvider = ({ children }) => {
       const now = new Date();
       for (const bet of qubicApiBets) {
         const closeDate = new Date(
-          '20' + bet.close_date + 'T' + bet.close_time + 'Z'
+          "20" + bet.close_date + "T" + bet.close_time + "Z"
         );
         const endDate = new Date(
-          '20' + bet.end_date + 'T' + bet.end_time + 'Z'
+          "20" + bet.end_date + "T" + bet.end_time + "Z"
         );
 
         if (now < closeDate) {
@@ -268,18 +268,18 @@ export const QuotteryProvider = ({ children }) => {
     // Combine all core node bets for filtering duplication
     let coreNodeBets = [...activeBets, ...lockedBets, ...waitingForResultsBets];
 
-    if (filter === 'inactive' || filter === 'all') {
+    if (filter === "inactive" || filter === "all") {
       await fetchHistoricalBets(coreNodeBets, filter, page);
     }
 
     // Dispatch bets based on the filter
     dispatch({
-      type: 'SET_CORE_BETS',
+      type: "SET_CORE_BETS",
       payload: {
-        activeBets: filter === 'active' || filter === 'all' ? activeBets : [],
-        lockedBets: filter === 'locked' || filter === 'all' ? lockedBets : [],
+        activeBets: filter === "active" || filter === "all" ? activeBets : [],
+        lockedBets: filter === "locked" || filter === "all" ? lockedBets : [],
         waitingForResultsBets:
-          filter === 'inactive' || filter === 'all'
+          filter === "inactive" || filter === "all"
             ? waitingForResultsBets
             : [],
       },
@@ -296,11 +296,11 @@ export const QuotteryProvider = ({ children }) => {
         nodeInfo.game_operator
       );
       dispatch({
-        type: 'SET_NODE_INFO',
+        type: "SET_NODE_INFO",
         payload: nodeInfo,
       });
     } catch (error) {
-      console.error('Error fetching node info:', error);
+      console.error("Error fetching node info:", error);
     }
   };
 
@@ -313,13 +313,13 @@ export const QuotteryProvider = ({ children }) => {
     try {
       const response = await fetch(`${httpEndpoint}/v1/balances/${publicId}`, {
         headers: {
-          accept: 'application/json',
+          accept: "application/json",
         },
       });
       const data = await response.json();
       setBalance(data.balance.balance);
     } catch (error) {
-      console.error('Error fetching balance:', error);
+      console.error("Error fetching balance:", error);
     }
   };
 
@@ -392,8 +392,8 @@ export const QuotteryProvider = ({ children }) => {
   };
 
   const packQuotteryDateFromObject = ({ date, time }) => {
-    const [year, month, day] = date.split('-').map(Number);
-    const [hour, minute] = time.split(':').map(Number);
+    const [year, month, day] = date.split("-").map(Number);
+    const [hour, minute] = time.split(":").map(Number);
     const second = 0; // Assuming second is always 0 as it is not provided
 
     return packQuotteryDate(year, month, day, hour, minute, second);
@@ -426,11 +426,11 @@ export const QuotteryProvider = ({ children }) => {
     // Parse the end date-time from the bet object
     const endDateTime = new Date(
       Date.UTC(
-        parseInt(bet.endDateTime.date.split('-')[0]), // Year
-        parseInt(bet.endDateTime.date.split('-')[1]) - 1, // Month (0-based)
-        parseInt(bet.endDateTime.date.split('-')[2]), // Day
-        parseInt(bet.endDateTime.time.split(':')[0]), // Hour
-        parseInt(bet.endDateTime.time.split(':')[1]), // Minute
+        parseInt(bet.endDateTime.date.split("-")[0]), // Year
+        parseInt(bet.endDateTime.date.split("-")[1]) - 1, // Month (0-based)
+        parseInt(bet.endDateTime.date.split("-")[2]), // Day
+        parseInt(bet.endDateTime.time.split(":")[0]), // Hour
+        parseInt(bet.endDateTime.time.split(":")[1]), // Minute
         0 // Second
       )
     );
@@ -458,7 +458,7 @@ export const QuotteryProvider = ({ children }) => {
     const qCrypto = await Crypto;
     const tick = await getTick();
     const tickOffset = 5;
-    console.log('Target Tick:', tick + tickOffset);
+    console.log("Target Tick:", tick + tickOffset);
 
     const publishResultDataSize = 8; // Size of publishResult_input struct in Quottery.h
     const quotteryTxSize = qHelper.TRANSACTION_SIZE + publishResultDataSize;
@@ -523,9 +523,9 @@ export const QuotteryProvider = ({ children }) => {
     tx.set(signedTx, offset);
     offset += qHelper.SIGNATURE_LENGTH;
 
-    console.log('betId:', betId, 'option:', option);
+    console.log("betId:", betId, "option:", option);
     const txResult = await broadcastTx(tx);
-    console.log('Response:', txResult);
+    console.log("Response:", txResult);
 
     return {
       targetTick: tick + tickOffset,
@@ -538,7 +538,7 @@ export const QuotteryProvider = ({ children }) => {
     const qCrypto = await Crypto;
     const tick = await getTick();
     const tickOffset = 4;
-    console.log('Target Tick:', tick + tickOffset);
+    console.log("Target Tick:", tick + tickOffset);
     // build Quottery TX
     const quotteryDataSize = 600;
     const quotteryTxSize = qHelper.TRANSACTION_SIZE + quotteryDataSize;
@@ -637,7 +637,7 @@ export const QuotteryProvider = ({ children }) => {
     offset += qHelper.SIGNATURE_LENGTH;
 
     const txResult = await broadcastTx(tx);
-    console.log('Response:', txResult);
+    console.log("Response:", txResult);
 
     return {
       targetTick: tick + tickOffset,

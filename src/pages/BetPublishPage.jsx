@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useQuotteryContext } from '../contexts/QuotteryContext';
-import { useQubicConnect } from '../components/qubic/connect/QubicConnectContext';
-import ConfirmTxModal from '../components/qubic/connect/ConfirmTxModal';
-import Card from '@mui/material/Card';
-import { formatDate } from '../components/qubic/util/commons';
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useQuotteryContext } from "../contexts/QuotteryContext";
+import { useQubicConnect } from "../components/qubic/connect/QubicConnectContext";
+import ConfirmTxModal from "../components/qubic/connect/ConfirmTxModal";
+import Card from "@mui/material/Card";
+import { formatDate } from "../components/qubic/util/commons";
 
 const BetPublishPage = () => {
   const { id } = useParams();
@@ -44,14 +44,14 @@ const BetPublishPage = () => {
         setIsOracleProvider(isProvider);
 
         if (!isProvider) {
-          alert('You are not authorized to publish the result of this bet.');
-          navigate('/');
+          alert("You are not authorized to publish the result of this bet.");
+          navigate("/");
           return;
         }
 
         // Check if current date exceeds bet's end date
         const endDateTime = new Date(
-          '20' + betDetails.end_date + 'T' + betDetails.end_time + 'Z'
+          "20" + betDetails.end_date + "T" + betDetails.end_time + "Z"
         );
         const now = new Date();
         const afterEndDate = now > endDateTime;
@@ -83,7 +83,7 @@ const BetPublishPage = () => {
         // Determine if the user can publish
         setCanPublish(afterEndDate && enoughParticipants && !hasPublished);
       } else {
-        await fetchBets('all');
+        await fetchBets("all");
       }
     };
 
@@ -106,53 +106,53 @@ const BetPublishPage = () => {
   };
 
   return (
-    <div className="mt-[90px] sm:px-30 md:px-130">
-      <div className="max-w-3xl mx-auto p-4">
-        <h1 className="text-2xl text-white">Publish Bet Result</h1>
+    <div className='mt-[90px] sm:px-30 md:px-130'>
+      <div className='max-w-3xl mx-auto p-4'>
+        <h1 className='text-2xl text-white'>Publish Bet Result</h1>
         {bet && isOracleProvider && (
           <>
             {!isAfterEndDate && (
-              <p className="text-gray-50 mt-4">
-                Publish bet (please come back after {formatDate(bet.end_date)}{' '}
+              <p className='text-gray-50 mt-4'>
+                Publish bet (please come back after {formatDate(bet.end_date)}{" "}
                 {bet.end_time} UTC)
               </p>
             )}
             {isAfterEndDate && !hasEnoughParticipants && (
-              <p className="text-gray-50 mt-4">
+              <p className='text-gray-50 mt-4'>
                 Publish bet (not enough parties joined the bet)
               </p>
             )}
             {isAfterEndDate && hasEnoughParticipants && hasAlreadyPublished && (
-              <p className="text-gray-50 mt-4">
+              <p className='text-gray-50 mt-4'>
                 Publish bet (already published)
               </p>
             )}
             {canPublish && (
               <>
-                <Card className="p-[24px] w-full mt-[16px]">
-                  <h2 className="text-xl text-white">
+                <Card className='p-[24px] w-full mt-[16px]'>
+                  <h2 className='text-xl text-white'>
                     {bet.full_description ? bet.full_description : bet.bet_desc}
                   </h2>
-                  <p className="text-gray-50">Bet ID: {bet.bet_id}</p>
+                  <p className='text-gray-50'>Bet ID: {bet.bet_id}</p>
                 </Card>
-                <div className="mt-4">
-                  <h3 className="text-white mb-2">Select Winning Option</h3>
+                <div className='mt-4'>
+                  <h3 className='text-white mb-2'>Select Winning Option</h3>
                   {bet.option_desc.map((option, index) => (
-                    <div key={index} className="flex items-center mb-2">
+                    <div key={index} className='flex items-center mb-2'>
                       <input
-                        type="radio"
-                        name="winningOption"
+                        type='radio'
+                        name='winningOption'
                         value={index}
                         checked={selectedOption === index}
                         onChange={() => setSelectedOption(index)}
-                        className="mr-2"
+                        className='mr-2'
                       />
-                      <label className="text-white">{option}</label>
+                      <label className='text-white'>{option}</label>
                     </div>
                   ))}
                 </div>
                 <button
-                  className="mt-4 p-2 bg-primary-40 text-black rounded-lg"
+                  className='mt-4 p-2 bg-primary-40 text-black rounded-lg'
                   onClick={handlePublish}
                   disabled={selectedOption === null}
                 >
@@ -167,12 +167,11 @@ const BetPublishPage = () => {
         open={showConfirmTxModal}
         onClose={() => {
           setShowConfirmTxModal(false);
-          navigate('/');
+          navigate("/");
         }}
-        
         tx={{
-          title: 'Publish Result',
-          description: 'Are you sure you want to publish this result ?',
+          title: "Publish Result",
+          description: "Are you sure you want to publish this result ?",
         }}
         onConfirm={async () => {
           return await signPublishResultTx(bet.bet_id, selectedOption);

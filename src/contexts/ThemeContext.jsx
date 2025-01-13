@@ -5,9 +5,9 @@ import React, {
   useState,
   useMemo,
   useEffect,
-} from 'react';
-import { ThemeProvider, CssBaseline } from '@mui/material';
-import { lightTheme, darkTheme } from '../Theme';
+} from "react";
+import { ThemeProvider, CssBaseline } from "@mui/material";
+import { lightTheme, darkTheme } from "../Theme";
 
 const ThemeContext = createContext();
 
@@ -16,13 +16,13 @@ export const useThemeContext = () => useContext(ThemeContext);
 export const ThemeContextProvider = ({ children }) => {
   // Read the user's preference from localStorage
   const getInitialTheme = () => {
-    const savedTheme = localStorage.getItem('isDarkMode');
+    const savedTheme = localStorage.getItem("isDarkMode");
     if (savedTheme !== null) {
       return JSON.parse(savedTheme);
     }
     const prefersDark =
       window.matchMedia &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches;
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
     return prefersDark;
   };
 
@@ -39,7 +39,7 @@ export const ThemeContextProvider = ({ children }) => {
 
   // Save the user's preference to localStorage
   useEffect(() => {
-    localStorage.setItem('isDarkMode', JSON.stringify(isDarkMode));
+    localStorage.setItem("isDarkMode", JSON.stringify(isDarkMode));
   }, [isDarkMode]);
 
   return (

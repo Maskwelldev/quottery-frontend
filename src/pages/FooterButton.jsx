@@ -1,7 +1,7 @@
 // src/components/FooterButton.jsx
-import React from 'react';
-import { Button } from '@mui/material';
-import PropTypes from 'prop-types';
+import React from "react";
+import { Button } from "@mui/material";
+import PropTypes from "prop-types";
 
 const FooterButton = React.memo(
   ({ variant, color, onClick, startIcon, children, disabled, sx }) => (
@@ -12,8 +12,8 @@ const FooterButton = React.memo(
       startIcon={startIcon}
       disabled={disabled}
       sx={{
-        height: '100%',
-        flex: '1 1 0',
+        height: "100%",
+        flex: "1 1 0",
         ...sx,
       }}
     >

@@ -52,28 +52,28 @@ const Header = () => {
 
   return (
     <AppBar sx={appBarStyles}>
-      <Container maxWidth="xxl">
+      <Container maxWidth='xxl'>
         <Toolbar disableGutters sx={toolbarStyles}>
-          <Box display="flex" alignItems="center">
+          <Box display='flex' alignItems='center'>
             <IconButton
               component={Link}
-              to="/"
-              edge="start"
-              color="inherit"
+              to='/'
+              edge='start'
+              color='inherit'
               sx={{ p: 0 }}
             >
               <Box
-                component="img"
+                component='img'
                 src={isDarkMode ? logoDark : logoLight}
-                alt="logo"
+                alt='logo'
                 sx={logoStyles}
               />
             </IconButton>
           </Box>
 
-          <Box display="flex" alignItems="center" gap={2}>
+          <Box display='flex' alignItems='center' gap={2}>
             <ConnectLink />
-            <IconButton onClick={toggleTheme} color="inherit">
+            <IconButton onClick={toggleTheme} color='inherit'>
               {isDarkMode ? <Brightness7 /> : <Brightness4 />}
             </IconButton>
           </Box>
