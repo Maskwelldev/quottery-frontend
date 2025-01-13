@@ -10,6 +10,7 @@ import {
   ListItemIcon,
   ListItemText,
   useMediaQuery,
+  Box,
 } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -35,6 +36,7 @@ const CreateBetDetails = ({
 }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const formatDateTime = (date, time) => `${date}, ${time} UTC`;
 
   const details = [
     {
@@ -44,23 +46,13 @@ const CreateBetDetails = ({
     },
     {
       icon: <CalendarTodayIcon color='action' />,
-      label: "Closing Date",
-      value: closeDate,
-    },
-    {
-      icon: <AccessTimeIcon color='action' />,
-      label: "Closing Time",
-      value: closeTime,
+      label: "Closing DateTime",
+      value: formatDateTime(closeDate, closeTime),
     },
     {
       icon: <EventAvailableIcon color='action' />,
-      label: "Closing Date",
-      value: endDate,
-    },
-    {
-      icon: <AlarmIcon color='action' />,
-      label: "Closing Time",
-      value: endTime,
+      label: "End DateTime",
+      value: formatDateTime(endDate, endTime),
     },
     {
       icon: <ListAltIcon color='action' />,
@@ -70,12 +62,29 @@ const CreateBetDetails = ({
     {
       icon: <PeopleIcon color='action' />,
       label: "Providers",
-      value: providers
-        ?.map(
-          (provider) =>
-            `${truncateMiddle(provider.publicId, 40)} (Fee: ${provider.fee}%)`
-        )
-        .join(", "),
+      value: providers?.map((provider) => (
+        <Box
+          key={provider.publicId}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Typography
+            variant='body2'
+            sx={{ fontWeight: 500, color: theme.palette.text.primary }}
+          >
+            {truncateMiddle(provider.publicId, 40)}
+          </Typography>
+          <Typography
+            variant='body2'
+            sx={{ fontWeight: 500, color: theme.palette.text.secondary }}
+          >
+            Fee: {provider.fee}%
+          </Typography>
+        </Box>
+      )),
     },
     {
       icon: <MonetizationOnIcon color='action' />,
