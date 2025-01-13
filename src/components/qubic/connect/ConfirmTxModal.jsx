@@ -45,6 +45,7 @@ const ConfirmTxModal = ({
   onTransactionComplete,
   isBet,
   isCreate,
+  isPublish,
 }) => {
   const { getTick } = useQubicConnect();
   const navigate = useNavigate();
@@ -171,8 +172,8 @@ const ConfirmTxModal = ({
         onClose={onClose}
         fullScreen={isMobile}
         fullWidth
-        maxWidth="sm"
-        aria-labelledby="confirm-tx-dialog-title"
+        maxWidth='sm'
+        aria-labelledby='confirm-tx-dialog-title'
         BackdropProps={{
           sx: { backdropFilter: "blur(8px)" },
         }}
@@ -207,13 +208,13 @@ const ConfirmTxModal = ({
             mt: 1,
           }}
         >
-          <Box display="flex" alignItems="center" gap={1}>
+          <Box display='flex' alignItems='center' gap={1}>
             <PhonelinkIcon
-              fontSize="small"
+              fontSize='small'
               sx={{ color: theme.palette.text.primary }}
             />
             <Typography
-              variant="h6"
+              variant='h6'
               color={theme.palette.text.primary}
               sx={{ fontWeight: "bold" }}
             >
@@ -224,7 +225,7 @@ const ConfirmTxModal = ({
 
           <IconButton
             color={theme.palette.primary.main}
-            aria-label="close"
+            aria-label='close'
             onClick={onClose}
             sx={{ position: "absolute", right: 8, top: 8 }}
           >
@@ -234,26 +235,26 @@ const ConfirmTxModal = ({
 
         {/* Modal content */}
         <DialogContent>
-          <Box display="flex" flexDirection="column" gap={3}>
-            {(isBet || isCreate) &&
+          <Box display='flex' flexDirection='column' gap={1}>
+            {(isBet || isCreate || isPublish) &&
               !["pending", "failure", "success"].includes(
                 transactionStatus
               ) && (
                 <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  mt={2}
+                  display='flex'
+                  alignItems='center'
+                  justifyContent='center'
+                  my={1}
                 >
-                  <WarningAmberIcon color="info" sx={{ fontSize: 28, mr: 1 }} />
+                  <WarningAmberIcon color='info' sx={{ fontSize: 28, mr: 1 }} />
                   <Typography
-                    variant="h7"
-                    align="center"
+                    variant='h7'
+                    align='center'
                     sx={{ fontWeight: 500, display: "flex" }}
                   >
                     {tx.description}
                     <Box
-                      component="span"
+                      component='span'
                       sx={{
                         display: "inline-block",
                         ml: "0.2rem",
@@ -273,13 +274,13 @@ const ConfirmTxModal = ({
             {/* 2) Transaction SUCCESS */}
             {transactionStatus === "success" && (
               <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
+                display='flex'
+                flexDirection='column'
+                alignItems='center'
                 gap={2}
               >
-                <CheckCircleIcon color="success" sx={{ fontSize: 36, mt: 2 }} />
-                <Typography variant="h6" color="success.main">
+                <CheckCircleIcon color='success' sx={{ fontSize: 36, mt: 2 }} />
+                <Typography variant='h6' color='success.main'>
                   Transaction réussie !
                 </Typography>
               </Box>
@@ -288,13 +289,13 @@ const ConfirmTxModal = ({
             {/* 3) Transaction FAILURE */}
             {transactionStatus === "failure" && (
               <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
+                display='flex'
+                flexDirection='column'
+                alignItems='center'
                 gap={2}
               >
-                <CancelIcon color="error" sx={{ fontSize: 36, mt: 2 }} />
-                <Typography variant="h6" color="error.main">
+                <CancelIcon color='error' sx={{ fontSize: 36, mt: 2 }} />
+                <Typography variant='h6' color='error.main'>
                   Transaction échouée.
                 </Typography>
               </Box>
@@ -304,9 +305,9 @@ const ConfirmTxModal = ({
             {transactionStatus === "pending" && confirmedTx && (
               <>
                 <Box
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
+                  display='flex'
+                  justifyContent='center'
+                  alignItems='center'
                   mb={1}
                   sx={{
                     "@keyframes spin": {
@@ -316,24 +317,24 @@ const ConfirmTxModal = ({
                   }}
                 >
                   <SyncIcon
-                    color="primary"
+                    color='primary'
                     sx={{ fontSize: 30, animation: "spin 2s linear infinite" }}
                   />
                 </Box>
 
                 <Typography
-                  variant="body1"
-                  color="text.primary"
-                  textAlign="center"
+                  variant='body1'
+                  color='text.primary'
+                  textAlign='center'
                 >
                   Please wait while the transaction is being confirmed.
                 </Typography>
-                <Typography variant="body2" color="text.secondary" mt={1}>
+                <Typography variant='body2' color='text.secondary' mt={1}>
                   Actual tick : {tick} / {confirmedTx.targetTick}
                 </Typography>
                 <Box sx={{ width: "100%" }}>
                   <LinearProgress
-                    variant="determinate"
+                    variant='determinate'
                     value={
                       tick
                         ? Math.min(
@@ -363,31 +364,27 @@ const ConfirmTxModal = ({
             {/* 5) Transaction IDLE */}
             {transactionStatus === null && (
               <>
-                {!isBet ? (
-                  <>
-                    <AnotherBetDetails
-                      title={descriptionData.description}
-                      closeDate={descriptionData.closeDate}
-                      closeTime={descriptionData.closeTime}
-                      endDate={descriptionData.endDate}
-                      endTime={descriptionData.endTime}
-                      options={descriptionData.options}
-                      providers={descriptionData.providers}
-                      amountPerSlot={descriptionData.amountPerSlot}
-                      maxBetSlots={descriptionData.maxBetSlots}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <BetDetails
-                      title={descriptionData.description}
-                      betOptionDescription={
-                        descriptionData.betOptionDescription
-                      }
-                      amountOfBetSlots={descriptionData.amountOfBetSlots}
-                      optionCosts={descriptionData.optionCosts}
-                    />
-                  </>
+                {isBet && (
+                  <BetDetails
+                    title={descriptionData.description}
+                    betOptionDescription={descriptionData.betOptionDescription}
+                    amountOfBetSlots={descriptionData.amountOfBetSlots}
+                    optionCosts={descriptionData.optionCosts}
+                  />
+                )}
+
+                {isCreate && (
+                  <AnotherBetDetails
+                    title={descriptionData.description}
+                    closeDate={descriptionData.closeDate}
+                    closeTime={descriptionData.closeTime}
+                    endDate={descriptionData.endDate}
+                    endTime={descriptionData.endTime}
+                    options={descriptionData.options}
+                    providers={descriptionData.providers}
+                    amountPerSlot={descriptionData.amountPerSlot}
+                    maxBetSlots={descriptionData.maxBetSlots}
+                  />
                 )}
 
                 {/* CANCEL / CONFIRM */}
@@ -397,20 +394,20 @@ const ConfirmTxModal = ({
                     flexDirection: "row",
                     justifyContent: "center",
                     gap: 4,
-                    mt: 3,
+                    mt: 1,
                   }}
                 >
                   <Button
-                    variant="outlined"
-                    color="tertiary"
+                    variant='outlined'
+                    color='tertiary'
                     startIcon={<CancelIcon />}
                     onClick={onClose}
                   >
                     CANCEL
                   </Button>
                   <Button
-                    variant="outlined"
-                    color="primary"
+                    variant='outlined'
+                    color='primary'
                     startIcon={<CheckCircleIcon />}
                     onClick={handleConfirm}
                   >
@@ -432,7 +429,7 @@ const ConfirmTxModal = ({
       >
         <Alert
           onClose={handleCloseSnackbar}
-          severity="error"
+          severity='error'
           sx={{ width: "100%" }}
         >
           {errorMessage}
