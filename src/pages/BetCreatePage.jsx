@@ -426,7 +426,7 @@ function BetCreatePage() {
           >
             <ArrowBackIcon />
           </IconButton>
-          <Typography variant='h5' color='text.primary' fontWeight='bold'>
+          <Typography variant='h5' color='text.primary' fontWeight={500}>
             Create New Bet
           </Typography>
         </Box>
@@ -482,6 +482,11 @@ function BetCreatePage() {
                           : "",
                       })
                     }
+                    sx={{
+                      "& .MuiSvgIcon-root": {
+                        color: theme.palette.primary.main,
+                      },
+                    }}
                     minDate={dayjs()}
                     renderInput={(params) => (
                       <TextField
@@ -503,6 +508,11 @@ function BetCreatePage() {
                         closeTime: newValue ? newValue.format("HH:mm") : "",
                       })
                     }
+                    sx={{
+                      "& .MuiSvgIcon-root": {
+                        color: theme.palette.primary.main,
+                      },
+                    }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -536,6 +546,11 @@ function BetCreatePage() {
                         endDate: newValue ? newValue.format("YYYY-MM-DD") : "",
                       })
                     }
+                    sx={{
+                      "& .MuiSvgIcon-root": {
+                        color: theme.palette.primary.main,
+                      },
+                    }}
                     minDate={minEnd?.date ? dayjs(minEnd.date) : null}
                     renderInput={(params) => (
                       <TextField
@@ -557,6 +572,11 @@ function BetCreatePage() {
                         endTime: newValue ? newValue.format("HH:mm") : "",
                       })
                     }
+                    sx={{
+                      "& .MuiSvgIcon-root": {
+                        color: theme.palette.primary.main,
+                      },
+                    }}
                     minTime={
                       minEnd?.time ? dayjs(minEnd.time, "HH:mm") : undefined
                     }
@@ -765,11 +785,18 @@ function BetCreatePage() {
               />
               <TextField
                 fullWidth
-                type='number'
-                value={bet.amountPerSlot}
-                onChange={(e) =>
-                  setBet({ ...bet, amountPerSlot: e.target.value })
+                type='text'
+                value={
+                  bet.amountPerSlot
+                    ? Number(bet.amountPerSlot).toLocaleString("en-US")
+                    : ""
                 }
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/,/g, "");
+                  if (/^\d*$/.test(rawValue)) {
+                    setBet({ ...bet, amountPerSlot: rawValue });
+                  }
+                }}
                 error={Boolean(errors.amountPerSlot)}
                 helperText={errors.amountPerSlot}
                 sx={{
@@ -823,7 +850,7 @@ function BetCreatePage() {
             >
               <Typography
                 variant='button'
-                sx={{ fontWeight: "bold", fontSize: "0.9rem" }}
+                sx={{ fontWeight: 500, fontSize: "0.9rem" }}
               >
                 Create Bet
               </Typography>

@@ -9,6 +9,8 @@ import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import DiamondIcon from "@mui/icons-material/Diamond";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
 import EggIcon from "@mui/icons-material/Egg";
+import { ReactComponent as QubicSymbol } from "../assets/qubic-symbol-dark.svg";
+import { ReactComponent as QubicSymbolWhite } from "../assets/qubic-symbol-white.svg";
 import { sumArray, formatQubicAmount } from "./qubic/util";
 import { formatDate } from "./qubic/util/commons";
 
@@ -357,7 +359,26 @@ function BetOverviewTable({ bets, onRowClick, loading }) {
           alignItems='center'
           justifyContent='center'
           height='100%'
+          gap={0.5}
         >
+          {theme.palette.mode === "dark" ? (
+            <QubicSymbolWhite
+              style={{
+                fill: theme.palette.secondary.main,
+                width: "0.65rem",
+                height: "0.65rem",
+              }}
+            />
+          ) : (
+            <QubicSymbol
+              style={{
+                fill: theme.palette.secondary.main,
+                width: "0.65rem",
+                height: "0.65rem",
+              }}
+            />
+          )}
+
           <Typography variant='body2'>{params.value.display}</Typography>
         </Box>
       ),

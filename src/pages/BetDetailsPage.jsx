@@ -48,6 +48,8 @@ import {
   RocketLaunch as RocketLaunchIcon,
   ContentCopy as ContentCopyIcon,
 } from "@mui/icons-material";
+import { ReactComponent as QubicSymbol } from "../assets/qubic-symbol-dark.svg";
+import { ReactComponent as QubicSymbolWhite } from "../assets/qubic-symbol-white.svg";
 import { useTheme, alpha } from "@mui/material/styles";
 import AnimatedBars from "../components/qubic/ui/AnimateBars";
 import ConfirmTxModal from "../components/qubic/connect/ConfirmTxModal";
@@ -336,33 +338,6 @@ function BetDetailsPage() {
     else navigate("/");
   };
 
-  // --- Display total costs ---
-  // const BetOptionCosts = ({ costs }) => {
-  //   const [fontSize, setFontSize] = useState("h4");
-  //   const costsStr = formatQubicAmount(costs);
-
-  //   useEffect(() => {
-  //     if (costsStr.length >= 14) setFontSize("subtitle1");
-  //     else if (costsStr.length >= 11) setFontSize("h6");
-  //     else setFontSize("h5");
-  //   }, [costsStr]);
-
-  //   return (
-  //     <Box textAlign="center">
-  //       <Typography
-  //         variant={isMobile ? "h6" : "h5"}
-  //         color="primary.main"
-  //         sx={{ lineHeight: 1.2 }}
-  //       >
-  //         {costsStr}
-  //       </Typography>
-  //       <Typography variant="body2" color="text.secondary">
-  //         QUBIC
-  //       </Typography>
-  //     </Box>
-  //   );
-  // };
-
   // --- Main render ---
   if (loading) {
     return (
@@ -444,32 +419,34 @@ function BetDetailsPage() {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
-              gap: 2,
-              animation: "borderEffect 5s linear infinite",
+              gap: 1.5,
             }}
           >
-            <Box
-              component='svg'
-              viewBox='0 0 35 35'
-              xmlns='http://www.w3.org/2000/svg'
-              sx={{
-                color: theme.palette.primary.main,
-                width: "8%",
-                height: "auto",
-              }}
-            >
-              <path
-                fillRule='evenodd'
-                clipRule='evenodd'
-                d='M0 7H6.01795V25.0012H0V7ZM8.02734 7H14.0035V31H8.02734V7Z'
-                fill='currentColor'
-              />
+            <Box display='flex' alignItems='center' justifyContent='center'>
+              {theme.palette.mode === "dark" ? (
+                <QubicSymbolWhite
+                  style={{
+                    fill: theme.palette.secondary.main,
+                    width: "1.5rem",
+                    height: "1.5rem",
+                  }}
+                />
+              ) : (
+                <QubicSymbol
+                  style={{
+                    fill: theme.palette.secondary.main,
+                    width: "1.5rem",
+                    height: "1.5rem",
+                  }}
+                />
+              )}
             </Box>
-
             <Typography
               variant={isMobile ? "h6" : "h5"}
               sx={{
                 color: theme.palette.mode === "light" ? "text.primary" : "#fff",
+                display: "flex",
+                alignItems: "center",
               }}
             >
               {formatQubicAmount(bet.current_total_qus)} QUBIC

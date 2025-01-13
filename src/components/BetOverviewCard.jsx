@@ -11,7 +11,8 @@ import {
   Divider,
 } from "@mui/material";
 import { motion } from "framer-motion";
-
+import { ReactComponent as QubicSymbol } from "../assets/qubic-symbol-dark.svg";
+import { ReactComponent as QubicSymbolWhite } from "../assets/qubic-symbol-white.svg";
 import LockIcon from "@mui/icons-material/Lock";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import HelpIcon from "@mui/icons-material/Help";
@@ -23,7 +24,6 @@ import WhatshotIcon from "@mui/icons-material/Whatshot";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PeopleIcon from "@mui/icons-material/People";
 import GavelIcon from "@mui/icons-material/Gavel";
-import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 
 import { sumArray, formatQubicAmount } from "./qubic/util";
 import { formatDate } from "./qubic/util/commons";
@@ -336,16 +336,24 @@ function BetOverviewCard({ data, onClick, status = "" }) {
           </Box>
 
           <Box display='flex' alignItems='center' gap={1}>
-            <MonetizationOnIcon
-              fontSize='small'
-              sx={{
-                color: theme.palette.text.secondary,
-                fontSize: "1.2rem",
-                [theme.breakpoints.down("sm")]: {
-                  fontSize: "1rem",
-                },
-              }}
-            />
+            {theme.palette.mode === "dark" ? (
+              <QubicSymbolWhite
+                style={{
+                  fill: theme.palette.secondary.main,
+                  width: "1rem",
+                  height: "1rem",
+                }}
+              />
+            ) : (
+              <QubicSymbol
+                style={{
+                  fill: theme.palette.secondary.main,
+                  width: "1rem",
+                  height: "1rem",
+                }}
+              />
+            )}
+
             <Typography
               variant='h6'
               sx={{
@@ -358,7 +366,7 @@ function BetOverviewCard({ data, onClick, status = "" }) {
                 },
               }}
             >
-              {formatQubicAmount(data.current_total_qus)} Qubic
+              {formatQubicAmount(data.current_total_qus)}
             </Typography>
           </Box>
         </Box>
