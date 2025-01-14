@@ -19,7 +19,8 @@ import PeopleIcon from "@mui/icons-material/People";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import GroupWorkIcon from "@mui/icons-material/GroupWork";
 import DescriptionIcon from "@mui/icons-material/Description";
-import { formatQubicAmount, truncateMiddle } from "./qubic/util";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
+import { formatQubicAmount } from "./qubic/util";
 
 const CreateBetDetails = ({
   title,
@@ -31,16 +32,31 @@ const CreateBetDetails = ({
   providers,
   amountPerSlot,
   maxBetSlots,
+  betCreationFee,
 }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const formatDateTime = (date, time) => `${date}, ${time} UTC`;
+  const truncateMiddle = (
+    title,
+    maxLengthDesktop,
+    maxLengthMobile,
+    isSmallScreen
+  ) =>
+    title.length > (isSmallScreen ? maxLengthMobile : maxLengthDesktop)
+      ? `${title.slice(
+          0,
+          (isSmallScreen ? maxLengthMobile : maxLengthDesktop) / 2 - 1
+        )}...${title.slice(
+          -(isSmallScreen ? maxLengthMobile : maxLengthDesktop) / 2 + 2
+        )}`
+      : title;
 
   const details = [
     {
       icon: <DescriptionIcon color='action' />,
       label: "Bet description",
-      value: title,
+      value: truncateMiddle(title, 60, 36, isSmallScreen),
     },
     {
       icon: <CalendarTodayIcon color='action' />,
@@ -73,7 +89,7 @@ const CreateBetDetails = ({
             variant='body2'
             sx={{ fontWeight: 500, color: theme.palette.text.primary }}
           >
-            {truncateMiddle(provider.publicId, 40)}
+            {truncateMiddle(provider.publicId, 40, 24, isSmallScreen)}
           </Typography>
           <Typography
             variant='body2'
@@ -144,11 +160,10 @@ const CreateBetDetails = ({
             </React.Fragment>
           ))}
 
-          <Divider sx={{ my: 0 }} />
-
+          <Divider />
           <ListItem disableGutters>
             <ListItemIcon sx={{ minWidth: 40 }}>
-              <MonetizationOnIcon color='action' />
+              <CreditCardIcon color='action' />
             </ListItemIcon>
             <ListItemText
               primary={
@@ -158,7 +173,7 @@ const CreateBetDetails = ({
                     color: theme.palette.text.secondary,
                   }}
                 >
-                  Total
+                  Bet Creation Fee
                 </Typography>
               }
               secondary={
@@ -169,11 +184,7 @@ const CreateBetDetails = ({
                     color: theme.palette.text.main,
                   }}
                 >
-                  {`${
-                    amountPerSlot
-                      ? formatQubicAmount(amountPerSlot * maxBetSlots)
-                      : "0"
-                  } QUBIC`}
+                  {`${betCreationFee} QUBIC`}
                 </Typography>
               }
             />

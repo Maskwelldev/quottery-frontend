@@ -319,37 +319,25 @@ function BetOverviewCard({ data, onClick, status = "" }) {
           justifyContent='space-between'
           mt={2}
         >
-          <Box
-            display='flex'
-            alignItems='center'
-            gap={1}
-            sx={{
-              "&:hover": {
-                color: isDarkMode
-                  ? theme.palette.info.light
-                  : theme.palette.warning.light,
-              },
-              transition: "transform 0.3s ease, color 0.3s ease",
-            }}
-          >
+          <Box display='flex' alignItems='center' gap={1}>
             {hotLevelIcon}
           </Box>
 
           <Box display='flex' alignItems='center' gap={1}>
-            {theme.palette.mode === "dark" ? (
+            {isDarkMode ? (
               <QubicSymbolWhite
                 style={{
                   fill: theme.palette.secondary.main,
-                  width: "1rem",
-                  height: "1rem",
+                  width: "0.8rem",
+                  height: "0.8rem",
                 }}
               />
             ) : (
               <QubicSymbol
                 style={{
                   fill: theme.palette.secondary.main,
-                  width: "1rem",
-                  height: "1rem",
+                  width: "0.8rem",
+                  height: "0.8rem",
                 }}
               />
             )}

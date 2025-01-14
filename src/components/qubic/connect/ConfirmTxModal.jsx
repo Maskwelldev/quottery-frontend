@@ -383,6 +383,7 @@ const ConfirmTxModal = ({
                     providers={descriptionData.providers}
                     amountPerSlot={descriptionData.amountPerSlot}
                     maxBetSlots={descriptionData.maxBetSlots}
+                    betCreationFee={descriptionData.betCreationFee}
                   />
                 )}
 
