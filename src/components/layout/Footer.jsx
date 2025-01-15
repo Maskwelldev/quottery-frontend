@@ -1,22 +1,17 @@
-import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import pkg from "../../../package.json";
 import logoShort from "../../assets/logo/logo-text-short.svg";
-import ServerConfigModal from "../qubic/connect/ServerConfigModal";
 import { Box, Typography, Link, useTheme, Divider } from "@mui/material";
 
 const Footer = () => {
   const { pathname } = useLocation();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const theme = useTheme();
 
   if (pathname.includes("/bet/")) {
     return null;
   }
 
-  const handleVersionClick = () => {
-    // setIsModalOpen(true);
-  };
+  console.log(theme.palette.background.paper);
 
   return (
     <Box
@@ -27,7 +22,7 @@ const Footer = () => {
       alignItems='center'
       justifyContent='space-between'
       gap={2}
-      bgcolor='transparent'
+      bgcolor={theme.palette.background.paper}
       color={theme.palette.text.secondary}
     >
       <Box display='flex' gap={2} alignItems='center'>
@@ -112,16 +107,10 @@ const Footer = () => {
         variant='body2'
         color='text.primary'
         sx={{ cursor: "pointer", mt: { xs: 2, sm: 0 } }}
-        onClick={handleVersionClick}
         aria-label={`Version ${pkg.version}`}
       >
         Version {pkg.version}
       </Typography>
-
-      {/* <ServerConfigModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      /> */}
     </Box>
   );
 };

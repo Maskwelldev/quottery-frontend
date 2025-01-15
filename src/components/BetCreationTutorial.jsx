@@ -68,7 +68,11 @@ export default function BetCreationTutorial() {
       <Stepper activeStep={-1} orientation='vertical' nonLinear>
         {steps.map((step, index) => (
           <Step key={index} completed>
-            <StepLabel>
+            <StepLabel
+              StepIconProps={{
+                style: { color: "#10b981" },
+              }}
+            >
               <Typography variant='subtitle1' fontWeight='bold'>
                 {`Step ${index + 1}: ${step.title}`}
               </Typography>

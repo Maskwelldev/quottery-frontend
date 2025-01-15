@@ -348,17 +348,17 @@ function BetCreatePage() {
     }
 
     // Check if the user has enough balance to create the bet
-    // if (balance !== null && BigInt(balance) < BigInt(betCreationFee)) {
-    //   showSnackbar(
-    //     `You do not have enough balance to create this bet. Your balance: ${formatQubicAmount(
-    //       balance
-    //     )} Qubic. Bet creation fee: ${formatQubicAmount(
-    //       betCreationFee
-    //     )} Qubic.`,
-    //     "error"
-    //   );
-    //   return;
-    // }
+    if (balance !== null && BigInt(balance) < BigInt(betCreationFee)) {
+      showSnackbar(
+        `You do not have enough balance to create this bet. Your balance: ${formatQubicAmount(
+          balance
+        )} Qubic. Bet creation fee: ${formatQubicAmount(
+          betCreationFee
+        )} Qubic.`,
+        "error"
+      );
+      return;
+    }
 
     // Prepare bet data to send
     const constructedBet = {
@@ -433,7 +433,7 @@ function BetCreatePage() {
   return (
     <Container
       maxWidth='md'
-      sx={{ mt: theme.spacing(10), mb: theme.spacing(4) }}
+      sx={{ mt: theme.spacing(12), mb: theme.spacing(4) }}
     >
       <Paper
         elevation={0}
@@ -494,6 +494,7 @@ function BetCreatePage() {
               />
               <TextField
                 fullWidth
+                label='Description'
                 variant='outlined'
                 value={betDescInput}
                 onChange={(e) => setBetDescInput(e.target.value)}
@@ -897,6 +898,7 @@ function BetCreatePage() {
                 variant='subtitle1'
                 display='flex'
                 alignItems='center'
+                justifyContent='flex-end'
               >
                 Bet creation fees:{" "}
                 {theme.palette.mode === "dark" ? (
@@ -966,7 +968,7 @@ function BetCreatePage() {
           betCreationFee: betCreationFee,
         }}
         tx={{
-          description: "Are you sure you want to create this bet?",
+          description: "Are you sure you want to create this bet ?",
         }}
         onConfirm={async () => {
           // Send betToSend (which contains the hashed description)
