@@ -296,7 +296,7 @@ function StartPage() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              borderRadius: 2,
+              borderRadius: 10,
               boxShadow: theme.shadows[1],
               color: theme.palette.primary.contrastText,
               "&:focus": {

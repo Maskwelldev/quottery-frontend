@@ -825,7 +825,7 @@ function BetDetailsPage() {
         {/* BLOCK SLOTS + / - (avec Fade  & scroll) */}
         <Fade direction='up' in={selectedOption !== null}>
           <Box
-            ref={betSlotsRef} // On attache la référence ici
+            ref={betSlotsRef}
             sx={{
               mb: 3,
               borderRadius: 2,
@@ -917,7 +917,7 @@ function BetDetailsPage() {
         {/* ACTIONS BAR */}
         <Paper
           square
-          elevation={2}
+          elevation={0}
           sx={{
             position: "fixed",
             bottom: 0,
@@ -935,7 +935,7 @@ function BetDetailsPage() {
                 alignItems: "center",
                 justifyContent: "space-between",
                 gap: 0,
-                py: isMobile ? 2.5 : 3,
+                py: isMobile ? 2 : 2,
                 px: { xs: 2, sm: 3 },
               }}
             >
