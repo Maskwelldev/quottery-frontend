@@ -394,17 +394,6 @@ function StartPage() {
           renderLoading()
         ) : (
           <Box sx={{ mb: { xs: 4, sm: 5, md: 6 } }}>
-            {/* <Typography
-              variant="h5"
-              textAlign="center"
-              fontWeight="bold"
-              gutterBottom
-              color="text.primary"
-              sx={{ mb: { xs: 2, sm: 3 } }}
-            >
-              Listing All Bets
-            </Typography> */}
-
             {viewMode === "table" && isDesktop ? (
               <BetOverviewTable
                 bets={betsToDisplay}

@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 // Default endpoints
-// const DEFAULT_HTTP_ENDPOINT = "https://rpc.qubic.org";
-// const DEFAULT_BACKEND_URL = "https://api.quottery.org";
+const DEFAULT_HTTP_ENDPOINT = "https://rpc.qubic.org";
+const DEFAULT_BACKEND_URL = "https://api.quottery.org";
 
 // Testnet endpoints
-const DEFAULT_HTTP_ENDPOINT = 'https://91.210.226.146'
-const DEFAULT_BACKEND_URL = 'https://qbtn.qubic.org'
+// const DEFAULT_HTTP_ENDPOINT = 'https://91.210.226.146'
+// const DEFAULT_BACKEND_URL = 'https://qbtn.qubic.org'
 
 const ConfigContext = createContext();
 

@@ -18,6 +18,7 @@ import {
 } from "../components/qubic/util/betApi";
 import { excludedBetIds } from "../components/qubic/util/commons";
 import { useConfig } from "./ConfigContext";
+// import { useBetCache } from "../components/qubic/util/useBetCache"
 
 const QuotteryContext = createContext();
 
