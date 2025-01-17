@@ -25,7 +25,7 @@ const Header = () => {
   });
 
   const appBarStyles = {
-    background: isDarkMode ? theme.palette.background.paper : "rgba(255, 255, 255, 0.95)",
+    background: theme.palette.background.paper,
     backdropFilter: "blur(12px)",
     WebkitBackdropFilter: "blur(12px)",
     boxShadow: scrollTrigger ? "0 8px 32px rgba(0, 0, 0, 0.12)" : "none",
