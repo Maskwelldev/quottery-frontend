@@ -80,7 +80,7 @@ const Footer = () => {
           underline='hover'
           color='text.primary'
           variant='body2'
-          aria-label='Politique de confidentialité'
+          aria-label='Privacy Policy'
         >
           Privacy Policy
         </Link>
@@ -97,7 +97,7 @@ const Footer = () => {
           underline='hover'
           color='text.primary'
           variant='body2'
-          aria-label='Statut du réseau'
+          aria-label='Network status'
         >
           Network Status
         </Link>

@@ -77,10 +77,10 @@ const ConfirmTxModal = ({
         const t = await getTick();
         setTick(t);
       } catch (error) {
-        console.error("Erreur lors de la récupération du tick :", error);
+        console.error("Error while fetching tick :", error);
         setTransactionStatus("failure");
         setErrorMessage(
-          "Erreur lors de la récupération de l'état de la transaction."
+          "The transaction could not be confirmed. Please retry."
         );
       }
     };
@@ -150,7 +150,7 @@ const ConfirmTxModal = ({
         startTickFetchInterval(confirmed);
       } else {
         throw new Error(
-          "Transaction non confirmée correctement (targetTick manquant)."
+          "Transaction not correctly confirmed (targetTick is missing)."
         );
       }
     } catch (error) {

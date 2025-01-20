@@ -115,16 +115,16 @@ const UserBets = () => {
         setCopied(true);
         setSnackbar({
           open: true,
-          message: "Public ID copié dans le presse-papiers !",
+          message: "Public ID copied !",
           severity: "success",
         });
         setTimeout(() => setCopied(false), 2000);
       })
       .catch((err) => {
-        console.error("Échec de la copie !", err);
+        console.error("Failed to copy Public ID:", err);
         setSnackbar({
           open: true,
-          message: "Échec de la copie du Public ID !",
+          message: "Failed to copy Public ID",
           severity: "error",
         });
       });
@@ -215,7 +215,7 @@ const UserBets = () => {
             }}
           >
             {truncateMiddle(walletPublicIdentity, 40)}
-            <Tooltip title="Copier l'ID Public">
+            <Tooltip title="Copy Public ID">
               <IconButton
                 onClick={copyToClipboard}
                 size='small'
@@ -224,7 +224,7 @@ const UserBets = () => {
                     ? theme.palette.success.main
                     : theme.palette.text.secondary,
                 }}
-                aria-label="Copier l'ID Public"
+                aria-label="Copy Public ID"
               >
                 {copied ? (
                   <CheckCircleIcon fontSize='small' />

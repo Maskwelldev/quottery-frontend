@@ -206,12 +206,12 @@ function StartPage() {
         <Box
           component='header'
           sx={{
-            display: "flex", // Utilisation de Flexbox
-            flexDirection: "column", // Orientation verticale
-            alignItems: "center", // Centrage horizontal
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
             mb: { xs: 4, sm: 5, md: 6 },
             mt: { xs: -2, sm: -3, md: -5 },
-            textAlign: "center", // Maintien du centrage du texte
+            textAlign: "center",
           }}
         >
           <Typography

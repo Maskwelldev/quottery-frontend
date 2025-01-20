@@ -1,19 +1,20 @@
 /* global BigInt */
-import { Buffer } from 'buffer';
-import base64 from 'base-64';
-import { HEADERS, makeJsonData, QTRY_CONTRACT_INDEX } from './commons';
-import { QubicHelper } from '@qubic-lib/qubic-ts-library/dist/qubicHelper';
-import { externalJsonAssetUrl, debuglog } from './commons';
-import { hashBetData } from './hashUtils';
+import { Buffer } from "buffer";
+import base64 from "base-64";
+import { HEADERS, makeJsonData, QTRY_CONTRACT_INDEX } from "./commons";
+import { QubicHelper } from "@qubic-lib/qubic-ts-library/dist/qubicHelper";
+import { externalJsonAssetUrl, debuglog } from "./commons";
+import { hashBetData } from "./hashUtils";
+import { getBetDescription, setBetDescription } from "./betDescriptionCache";
 
 // Get Node's info using qubic-http's API
 export const fetchNodeInfo = async (httpEndpoint, backendUrl) => {
   try {
-    const jsonData = makeJsonData(QTRY_CONTRACT_INDEX, 1, 0, '');
+    const jsonData = makeJsonData(QTRY_CONTRACT_INDEX, 1, 0, "");
     const query_smart_contract_api_uri = `${httpEndpoint}/v1/querySmartContract`;
 
     const response = await fetch(query_smart_contract_api_uri, {
-      method: 'POST',
+      method: "POST",
       headers: HEADERS,
       body: JSON.stringify(jsonData),
     });
@@ -27,7 +28,7 @@ export const fetchNodeInfo = async (httpEndpoint, backendUrl) => {
 
     const responseData = await response.json();
     const data = base64.decode(responseData.responseData);
-    const buffer = Buffer.from(data, 'binary');
+    const buffer = Buffer.from(data, "binary");
 
     // Unpacking data using DataView
     const dataView = new DataView(buffer.buffer);
@@ -73,8 +74,8 @@ export const fetchNodeInfo = async (httpEndpoint, backendUrl) => {
       game_operator: gameOperatorBytes,
     };
   } catch (error) {
-    console.error('Error in fetchNodeInfo:', error.message);
-    console.log('Falling back to old API for node info.');
+    console.error("Error in fetchNodeInfo:", error.message);
+    console.log("Falling back to old API for node info.");
 
     // Fallback to old API
     try {
@@ -84,11 +85,11 @@ export const fetchNodeInfo = async (httpEndpoint, backendUrl) => {
       if (data.node_info) {
         return data.node_info[0];
       } else {
-        throw new Error('Node info not found in old API response');
+        throw new Error("Node info not found in old API response");
       }
     } catch (fallbackError) {
       console.error(
-        'Error fetching node info from old API:',
+        "Error fetching node info from old API:",
         fallbackError.message
       );
       throw fallbackError; // Re-throwing the error for handling later in the caller
@@ -101,11 +102,11 @@ export const fetchNodeInfo = async (httpEndpoint, backendUrl) => {
 // "locked" bets haven't reached end dates, and "inactive" bets have exceeded end dates.
 // This function retrieves Quottery core active bet IDs using the qubic-http API.
 export const fetchActiveBets = async (httpEndpoint) => {
-  const json_data = makeJsonData(QTRY_CONTRACT_INDEX, 4, 0, '');
+  const json_data = makeJsonData(QTRY_CONTRACT_INDEX, 4, 0, "");
   const query_smart_contract_api_uri = `${httpEndpoint}/v1/querySmartContract`;
 
   const response = await fetch(query_smart_contract_api_uri, {
-    method: 'POST',
+    method: "POST",
     headers: HEADERS,
     body: JSON.stringify(json_data),
   });
@@ -114,7 +115,7 @@ export const fetchActiveBets = async (httpEndpoint) => {
   const data = base64.decode(responseData.responseData);
 
   // Use Buffer to handle binary data
-  const buffer = Buffer.from(data, 'binary');
+  const buffer = Buffer.from(data, "binary");
 
   // Read the count of active bets (first 4 bytes as UInt32)
   const count = buffer.readUInt32LE(0);
@@ -134,8 +135,8 @@ const parseFixedSizeStrings = (buffer, start, length, count, itemSize) => {
   for (let i = 0; i < count; i++) {
     const str = buffer
       .slice(start + i * itemSize, start + (i + 1) * itemSize)
-      .toString('utf-8');
-    items.push(str.replace(/\0/g, '')); // Remove null characters and trim whitespace
+      .toString("utf-8");
+    items.push(str.replace(/\0/g, "")); // Remove null characters and trim whitespace
   }
   return items;
 };
@@ -159,7 +160,7 @@ const calculateBettingOdds = (currentNumSelection) => {
   );
 
   // Initialize betting_odds as an array of "1.0"
-  let betting_odds = Array(currentNumSelection.length).fill('1.0');
+  let betting_odds = Array(currentNumSelection.length).fill("1.0");
 
   if (totalSelections > 0) {
     betting_odds = currentNumSelection.map((selection) =>
@@ -173,12 +174,12 @@ const calculateBettingOdds = (currentNumSelection) => {
 };
 
 const formatQuotteryDate = (dateObj) => {
-  if (!dateObj) return 'N/A';
-  const year = dateObj.year.toString().padStart(2, '0');
-  const month = dateObj.month.toString().padStart(2, '0');
-  const day = dateObj.day.toString().padStart(2, '0');
-  const hour = dateObj.hour.toString().padStart(2, '0');
-  const minute = dateObj.minute.toString().padStart(2, '0');
+  if (!dateObj) return "N/A";
+  const year = dateObj.year.toString().padStart(2, "0");
+  const month = dateObj.month.toString().padStart(2, "0");
+  const day = dateObj.day.toString().padStart(2, "0");
+  const hour = dateObj.hour.toString().padStart(2, "0");
+  const minute = dateObj.minute.toString().padStart(2, "0");
 
   // Format the date and time similar to the old API structure
   return {
@@ -211,7 +212,17 @@ export const fetchBetDetail = async (
 };
 
 export const fetchAndVerifyBetDescription = async (bet) => {
-  const isNewFormat = bet.bet_desc.startsWith('###');
+  const betId = bet.bet_id;
+
+  // Verify if the full description is already cached
+  const cachedDescription = getBetDescription(betId);
+  if (cachedDescription) {
+    bet.full_description = cachedDescription;
+    bet.bet_desc = cachedDescription;
+    return;
+  }
+
+  const isNewFormat = bet.bet_desc.startsWith("###");
 
   if (isNewFormat) {
     const qHelper = new QubicHelper();
@@ -219,9 +230,12 @@ export const fetchAndVerifyBetDescription = async (bet) => {
     const url = `${externalJsonAssetUrl}/bet_external_asset/${encodedHash}`;
 
     try {
+      console.log(
+        `[fetchAndVerifyBetDescription] Fetching new description from URL: ${url} for Bet ID ${betId}`
+      );
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       const data = await response.json();
 
@@ -249,29 +263,34 @@ export const fetchAndVerifyBetDescription = async (bet) => {
       const encodedHashFirst = encodedHash.substring(0, 23);
 
       debuglog(
-        'firstPartHash:',
+        "firstPartHash:",
         firstPartHash,
-        'encodedHashFirst:',
+        "encodedHashFirst:",
         encodedHashFirst
       );
 
       // Compare the hashes
       if (firstPartHash !== encodedHashFirst) {
-        throw new Error('Description hash does not match expected hash');
+        throw new Error("Description hash does not match expected hash");
       } else {
-        debuglog('Hash verified successfully!');
+        debuglog("Hash verified successfully!");
       }
 
       bet.full_description = data.description;
       bet.bet_desc = bet.full_description;
+
+      // Add the description to the cache
+      setBetDescription(betId, data.description);
     } catch (error) {
-      console.error('Error fetching or verifying full description:', error);
-      bet.full_description = 'Description not available.';
+      console.error("Error fetching or verifying full description:", error);
+      bet.full_description = "Description not available.";
       bet.description = bet.full_description;
     }
   } else {
     // Old format; use bet_desc as is
     bet.full_description = bet.bet_desc;
+    // Add the description to the cache
+    setBetDescription(betId, bet.bet_desc);
   }
 };
 
@@ -294,7 +313,7 @@ export const fetchBetDetailFromBackendApi = async (backendUrl, betId) => {
         bet.oracle_vote = JSON.parse(bet.oracle_vote);
 
         const closeDate = new Date(
-          '20' + bet.close_date + 'T' + bet.close_time + 'Z'
+          "20" + bet.close_date + "T" + bet.close_time + "Z"
         );
         const now = new Date();
         bet.is_active = now <= closeDate;
@@ -316,10 +335,10 @@ export const fetchBetDetailFromBackendApi = async (backendUrl, betId) => {
         throw new Error(`Bet with id ${betId} not found in backend API.`);
       }
     } else {
-      throw new Error('No bet_list in backend API response.');
+      throw new Error("No bet_list in backend API response.");
     }
   } catch (error) {
-    console.error('Error fetching bet detail from backend API:', error);
+    console.error("Error fetching bet detail from backend API:", error);
     throw error;
   }
 };
@@ -332,7 +351,7 @@ export const fetchBetDetailFromCoreNode = async (
 ) => {
   const betIdBuffer = Buffer.alloc(4);
   betIdBuffer.writeUInt32LE(betId, 0);
-  const inputBase64 = Buffer.from(betIdBuffer).toString('base64');
+  const inputBase64 = Buffer.from(betIdBuffer).toString("base64");
   const query_smart_contract_api_uri = `${httpEndpoint}/v1/querySmartContract`;
 
   const json_data = makeJsonData(QTRY_CONTRACT_INDEX, 2, 4, inputBase64);
@@ -340,7 +359,7 @@ export const fetchBetDetailFromCoreNode = async (
   for (let attempt = 0; attempt < maxRetryCount; attempt++) {
     try {
       const response = await fetch(query_smart_contract_api_uri, {
-        method: 'POST',
+        method: "POST",
         headers: HEADERS,
         body: JSON.stringify(json_data),
       });
@@ -353,7 +372,7 @@ export const fetchBetDetailFromCoreNode = async (
 
       const responseData = await response.json();
       const data = base64.decode(responseData.responseData);
-      const buffer = Buffer.from(data, 'binary');
+      const buffer = Buffer.from(data, "binary");
 
       const nOption = buffer.readUInt32LE(4);
       const openDateRaw = unpackQuotteryDate(buffer.readUInt32LE(616));
@@ -433,7 +452,7 @@ export const fetchBetDetailFromCoreNode = async (
       }
 
       if (retry !== 0) {
-        console.log('Done retrying');
+        console.log("Done retrying");
         retry = 0;
       }
 
@@ -444,8 +463,8 @@ export const fetchBetDetailFromCoreNode = async (
         creator: creator,
         bet_desc: buffer
           .slice(40, 72)
-          .toString('utf-8')
-          .replace(/\0/g, '')
+          .toString("utf-8")
+          .replace(/\0/g, "")
           .trim(), // Read and clean 32-byte bet description
         option_desc: parseFixedSizeStrings(buffer, 72, 256, 8, 32).filter(
           (id) => id.length > 0
@@ -478,11 +497,11 @@ export const fetchBetDetailFromCoreNode = async (
       );
 
       if (attempt === maxRetryCount - 1) {
-        console.error('Max retry attempts reached. Failing gracefully.');
+        console.error("Max retry attempts reached. Failing gracefully.");
         throw error; // Re-throw the error after the final attempt
       }
 
-      console.log('Retrying...');
+      console.log("Retrying...");
       retry++;
     }
   }
@@ -497,14 +516,14 @@ export const fetchParticipantsForBetOption = async (
   const buffer = Buffer.alloc(8);
   buffer.writeUInt32LE(betId, 0);
   buffer.writeUInt32LE(optionId, 4);
-  const inputBase64 = buffer.toString('base64');
+  const inputBase64 = buffer.toString("base64");
 
   // Prepare the request for the SC (inputType = 3, inputSize = 8 => to be adapted according to Qtry SC)
   const jsonData = makeJsonData(QTRY_CONTRACT_INDEX, 3, 8, inputBase64);
   const queryUri = `${httpEndpoint}/v1/querySmartContract`;
 
   const response = await fetch(queryUri, {
-    method: 'POST',
+    method: "POST",
     headers: HEADERS,
     body: JSON.stringify(jsonData),
   });
@@ -517,7 +536,7 @@ export const fetchParticipantsForBetOption = async (
 
   const responseData = await response.json();
   const decodedData = base64.decode(responseData.responseData);
-  const buf = Buffer.from(decodedData, 'binary');
+  const buf = Buffer.from(decodedData, "binary");
 
   let offset = 0;
   const participantCount = buf.readUInt32LE(offset);
@@ -600,7 +619,7 @@ export const fetchBetsForParticipant = async (
 
     return betsWithParticipation;
   } catch (error) {
-    console.error('Error fetching bets for participant:', error);
+    console.error("Error fetching bets for participant:", error);
     throw error;
   }
 };
