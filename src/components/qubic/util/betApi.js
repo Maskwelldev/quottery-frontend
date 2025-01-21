@@ -512,60 +512,68 @@ export const fetchParticipantsForBetOption = async (
   betId,
   optionId
 ) => {
-  // Prepare the payload (8 bytes = 4 for betId, 4 for optionId)
-  const buffer = Buffer.alloc(8);
-  buffer.writeUInt32LE(betId, 0);
-  buffer.writeUInt32LE(optionId, 4);
-  const inputBase64 = buffer.toString("base64");
+  try {
+    const buffer = Buffer.alloc(8);
+    buffer.writeUInt32LE(betId, 0);
+    buffer.writeUInt32LE(optionId, 4);
+    const inputBase64 = buffer.toString("base64");
 
-  // Prepare the request for the SC (inputType = 3, inputSize = 8 => to be adapted according to Qtry SC)
-  const jsonData = makeJsonData(QTRY_CONTRACT_INDEX, 3, 8, inputBase64);
-  const queryUri = `${httpEndpoint}/v1/querySmartContract`;
+    console.log(`fetchParticipantsForBetOption - betId: ${betId}, optionId: ${optionId}, inputBase64: ${inputBase64}`);
 
-  const response = await fetch(queryUri, {
-    method: "POST",
-    headers: HEADERS,
-    body: JSON.stringify(jsonData),
-  });
+    const jsonData = makeJsonData(QTRY_CONTRACT_INDEX, 3, 8, inputBase64);
+    const queryUri = `${httpEndpoint}/v1/querySmartContract`;
 
-  if (!response.ok) {
-    throw new Error(
-      `Erreur fetchParticipantsForBetOption: ${response.status} ${response.statusText}`
-    );
-  }
-
-  const responseData = await response.json();
-  const decodedData = base64.decode(responseData.responseData);
-  const buf = Buffer.from(decodedData, "binary");
-
-  let offset = 0;
-  const participantCount = buf.readUInt32LE(offset);
-  offset += 4;
-
-  const participants = [];
-  const qHelper = new QubicHelper();
-
-  for (let i = 0; i < participantCount; i++) {
-    // Reading 32 bytes for the public key
-    const pubKeyBytes = new Uint8Array(buf.slice(offset, offset + 32));
-    offset += 32;
-
-    // Reading 8 bytes for the slot count
-    const slotCount = buf.readBigUInt64LE(offset);
-    offset += 8;
-
-    // Convert the public key to identity
-    const identity = await qHelper.getIdentity(pubKeyBytes);
-
-    participants.push({
-      identity, // ex: "Q_ID_xxx"
-      publicKeyBytes: pubKeyBytes,
-      slotCount: slotCount, // BigInt
+    const response = await fetch(queryUri, {
+      method: "POST",
+      headers: HEADERS,
+      body: JSON.stringify(jsonData),
     });
-  }
 
-  return participants;
+    if (!response.ok) {
+      throw new Error(
+        `Erreur fetchParticipantsForBetOption: ${response.status} ${response.statusText}`
+      );
+    }
+
+    const responseData = await response.json();
+    console.log("fetchParticipantsForBetOption - responseData:", responseData);
+
+    const decodedData = base64.decode(responseData.responseData);
+    const buf = Buffer.from(decodedData, "binary");
+
+    console.log("fetchParticipantsForBetOption - decodedData length:", buf.length);
+    console.log("fetchParticipantsForBetOption - buffer contents (first 64 bytes):", buf.slice(0, 64));
+
+    const participants = [];
+    const qHelper = new QubicHelper();
+
+    for (let i = 0; i < 1024; i++) { // 32 * 1024 / 32 = 1024 max participants
+      const offset = i * 32;
+      const pubKeyBytes = buf.slice(offset, offset + 32);
+
+      // Vérifier si la clé publique n'est pas toute à zéro
+      const isNonZero = pubKeyBytes.some(byte => byte !== 0);
+      if (isNonZero) {
+        const identity = await qHelper.getIdentity(new Uint8Array(pubKeyBytes));
+        let slotCount = BigInt(0);
+        participants.push({
+          identity,
+          publicKeyBytes: pubKeyBytes,
+          slotCount,
+        });
+        console.log(`Participant ${i + 1}: ${identity}, Slot Count: ${slotCount}`);
+      }
+    }
+
+    console.log(`fetchParticipantsForBetOption - Total participants: ${participants.length}`);
+
+    return participants;
+  } catch (error) {
+    console.error("Error in fetchParticipantsForBetOption:", error);
+    throw error;
+  }
 };
+
 
 /**
  * Fetches all bets where the given publicId participated.
@@ -595,6 +603,8 @@ export const fetchBetsForParticipant = async (
         activeBetIds
       );
 
+      console.log('blu: ', betDetail);
+
       for (let i = 0; i < betDetail.option_desc.length; i++) {
         const participants = await fetchParticipantsForBetOption(
           httpEndpoint,
@@ -614,6 +624,7 @@ export const fetchBetsForParticipant = async (
             description: betDetail.bet_desc,
           });
         }
+        console.log("Participants for betId", betId, ":", participants);
       }
     }
 

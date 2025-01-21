@@ -15,6 +15,7 @@ import {
   fetchNodeInfo,
   fetchAndVerifyBetDescription,
   fetchParticipantsForBetOption,
+  fetchBetsForParticipant
 } from "../components/qubic/util/betApi";
 import { excludedBetIds } from "../components/qubic/util/commons";
 import { useConfig } from "./ConfigContext";
@@ -646,6 +647,20 @@ export const QuotteryProvider = ({ children }) => {
     };
   };
 
+  const getBetsForParticipant = async (publicId) => {
+    try {
+      const participatedBets = await fetchBetsForParticipant(
+        httpEndpoint,
+        backendUrl,
+        publicId
+      );
+      return participatedBets;
+    } catch (error) {
+      console.error("Error fetching participated bets:", error);
+      throw error;
+    }
+  };
+
   return (
     <QuotteryContext.Provider
       value={{
@@ -669,6 +684,7 @@ export const QuotteryProvider = ({ children }) => {
         setCurrentPage,
         inputPage,
         setInputPage,
+        getBetsForParticipant,
       }}
     >
       {children}

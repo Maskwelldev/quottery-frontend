@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import BetOverviewTable from "../components/BetOverviewTable";
 import BetOverviewCard from "../components/BetOverviewCard";
 import { useQuotteryContext } from "../contexts/QuotteryContext";
-import { fetchBetsForParticipant } from "../components/qubic/util/betApi";
+// import { fetchBetsForParticipant } from "../components/qubic/util/betApi";
 import ActiveIcon from "@mui/icons-material/CheckCircle";
 import HistoryIcon from "@mui/icons-material/History";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -46,24 +46,24 @@ const UserBets = () => {
     }
 
     // Fetch bets participated by the user
-    if (walletPublicIdentity) {
-      const fetchParticipatedBets = async () => {
-        try {
-          const participatedBets = await fetchBetsForParticipant(
-            process.env.REACT_APP_HTTP_ENDPOINT,
-            process.env.REACT_APP_BACKEND_URL,
-            walletPublicIdentity
-          );
-          setBetsParticipated(participatedBets);
-        } catch (error) {
-          console.error("Error fetching participated bets:", error);
-        } finally {
-          setLoadingParticipated(false);
-        }
-      };
+    // if (walletPublicIdentity) {
+    //   const fetchParticipatedBets = async () => {
+    //     try {
+    //       const participatedBets = await fetchBetsForParticipant(
+    //         process.env.REACT_APP_HTTP_ENDPOINT,
+    //         process.env.REACT_APP_BACKEND_URL,
+    //         walletPublicIdentity
+    //       );
+    //       setBetsParticipated(participatedBets);
+    //     } catch (error) {
+    //       console.error("Error fetching participated bets:", error);
+    //     } finally {
+    //       setLoadingParticipated(false);
+    //     }
+    //   };
 
-      fetchParticipatedBets();
-    }
+    //   fetchParticipatedBets();
+    // }
   }, [walletPublicIdentity, fetchBets, activeBets, historicalBets]);
 
   const handleBetClick = (betId) => {
@@ -265,7 +265,7 @@ const UserBets = () => {
         )}
       </Box>
 
-      <Box mb={4}>
+      {/* <Box mb={4}>
         <BetsHeader
           icon={<ActiveIcon fontSize={isMobile ? "small" : "inherit"} />}
           title='Participated Bets'
@@ -282,7 +282,7 @@ const UserBets = () => {
             No participated bets found.
           </Typography>
         )}
-      </Box>
+      </Box> */}
 
       <CustomSnackbar
         open={snackbar.open}

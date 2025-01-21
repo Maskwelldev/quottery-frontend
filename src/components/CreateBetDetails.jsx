@@ -113,7 +113,7 @@ const CreateBetDetails = ({
   ];
 
   return (
-    <Paper elevation={0} sx={{ mt: 1 }}>
+    <Paper elevation={0} sx={{ mt: 1, backgroundColor: 'inherit' }}>
       <Stack spacing={0}>
         <Typography
           variant={isSmallScreen ? "body1" : "h7"}
@@ -121,6 +121,7 @@ const CreateBetDetails = ({
             fontWeight: 500,
             color: theme.palette.text.secondary,
             textAlign: "start",
+            backgroundColor: 'inherit',
           }}
         >
           Bet Details :

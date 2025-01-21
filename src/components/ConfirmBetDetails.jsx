@@ -45,7 +45,7 @@ const BetDetails = ({
   ];
 
   return (
-    <Paper elevation={0} sx={{ mt: 1 }}>
+    <Paper elevation={0} sx={{ mt: 1, backgroundColor: 'inherit' }}>
       <Stack spacing={0}>
         <Typography
           variant={isSmallScreen ? "body1" : "h7"}
