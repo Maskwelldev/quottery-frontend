@@ -1,5 +1,5 @@
 /* global BigInt */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "../contexts/SnackbarContext";
 import {
@@ -15,14 +15,19 @@ import {
   InputAdornment,
   Grid,
   Alert,
-  AlertTitle,
   useTheme,
+  Dialog,
+  DialogTitle,
+  DialogContent,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import Close from "@mui/icons-material/Close";
 import InfoOutlined from "@mui/icons-material/InfoOutlined";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import { ReactComponent as QubicSymbol } from "../assets/qubic-symbol-dark.svg";
+import { ReactComponent as QubicSymbolWhite } from "../assets/qubic-symbol-white.svg";
 import ConfirmTxModal from "../components/qubic/connect/ConfirmTxModal";
 import { useQubicConnect } from "../components/qubic/connect/QubicConnectContext";
 import { useQuotteryContext } from "../contexts/QuotteryContext";
@@ -36,19 +41,23 @@ import { externalJsonAssetUrl } from "../components/qubic/util/commons";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
+import BetCreationTutorial from "../components/BetCreationTutorial";
 import dayjs from "dayjs";
 
+/**
+ * Label component with an info popover
+ */
 function LabelWithPopover({ label, description, required = false }) {
   const theme = useTheme();
   return (
-    <Box display="flex" alignItems="center" gap={1} mb={0.5}>
-      <Typography variant="subtitle1" fontWeight="bold">
+    <Box display='flex' alignItems='center' gap={1} mb={0.5}>
+      <Typography variant='subtitle1' fontWeight='bold'>
         {label}{" "}
         {required && <span style={{ color: theme.palette.error.main }}>*</span>}
       </Typography>
-      <Tooltip title={description} placement="right">
+      <Tooltip title={description} placement='right'>
         <InfoOutlined
-          fontSize="small"
+          fontSize='small'
           sx={{ color: theme.palette.secondary.main, cursor: "help" }}
         />
       </Tooltip>
@@ -56,12 +65,16 @@ function LabelWithPopover({ label, description, required = false }) {
   );
 }
 
+/**
+ * Page component for creating a new bet
+ */
 function BetCreatePage() {
   const navigate = useNavigate();
   const theme = useTheme();
 
   const [showConfirmTxModal, setShowConfirmTxModal] = useState(false);
   const { connected, toggleConnectModal, wallet } = useQubicConnect();
+  const [showTutorial, setShowTutorial] = useState(false);
   const { showSnackbar } = useSnackbar();
 
   // Quottery Context
@@ -77,39 +90,61 @@ function BetCreatePage() {
 
   // Node Info
   const nodeInfo = state.nodeInfo || {};
-  const minBetSlotAmount = nodeInfo.min_bet_slot_amount || 10000; // Amount min per slot
+  const minBetSlotAmount = nodeInfo.min_bet_slot_amount || 10000;
 
-  const [betDescInput, setBetDescInput] = useState(
-    "My First Bet Description with a maximum of 100 characters."
-  );
+  const [betDescInput, setBetDescInput] = useState("");
 
   const [bet, setBet] = useState({
-    // We don't hash the description here, we hash it in the final betToSend object
-    description: "", 
-    closeDate: dayjs().add(1, "day").format("YYYY-MM-DD"),
-    closeTime: "12:00",
-    endDate: dayjs().add(2, "day").format("YYYY-MM-DD"),
-    endTime: "12:00",
-    options: ["Option 1", "Option 2"],
+    description: "",
+    closeDate: "",
+    closeTime: "",
+    endDate: "",
+    endTime: "",
+    options: ["", ""],
     providers: [
       {
-        publicId:
-          "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        fee: "1",
+        publicId: walletPublicIdentity || "",
+        fee: "3",
       },
     ],
-    amountPerSlot: "10000",
-    maxBetSlots: "10",
+    amountPerSlot: "10000000",
+    maxBetSlots: "",
   });
 
-  // Final object to send in the Tx (containing the hash of the description)
+  // Final object to send in the transaction (contains the hash of the description)
   const [betToSend, setBetToSend] = useState(null);
+  const [betCreationFee, setBetCreationFee] = useState(null);
+  const updateBetCreationFee = async () => {
+    try {
+      const betCopy = {
+        ...bet,
+        closeDateTime: { date: bet.closeDate, time: bet.closeTime },
+        endDateTime: { date: bet.endDate, time: bet.endTime },
+      };
+      const fee = await issueBetTxCosts(betCopy);
+      setBetCreationFee(fee);
+    } catch (error) {
+      console.error("Failed to fetch bet creation fee:", error);
+      setBetCreationFee(null);
+    }
+  };
+
+  useEffect(() => {
+    updateBetCreationFee();
+  }, [
+    bet.closeDate,
+    bet.closeTime,
+    bet.endDate,
+    bet.endTime,
+    bet.maxBetSlots,
+    bet.options,
+  ]);
 
   // Validation errors
   const [errors, setErrors] = useState({});
 
   /**
-   * Return the identity of the creator of the bet
+   * Retrieve the creator's identity
    */
   const getCreatorIdentity = async () => {
     const qHelper = new QubicHelper();
@@ -119,7 +154,7 @@ function BetCreatePage() {
   };
 
   /**
-   * Upload the bet description to the external JSON asset
+   * Upload the bet description to an external JSON asset
    */
   const uploadDescription = async (description, encodedHash) => {
     try {
@@ -144,45 +179,52 @@ function BetCreatePage() {
   const validateForm = () => {
     let newErrors = {};
 
-    if (!betDescInput || betDescInput.length === 0) {
-      newErrors.description = "Description is required.";
+    // Description
+    if (!betDescInput || betDescInput.trim().length === 0) {
+      newErrors.description = "Description is required and cannot be empty.";
     } else if (betDescInput.length > 100) {
       newErrors.description = "Description cannot exceed 100 characters.";
     }
 
-    // CloseDate / EndDate + Time
+    // Close Date/Time and End Date/Time
     const closeValid = bet.closeDate && bet.closeTime;
     const endValid = bet.endDate && bet.endTime;
     if (!closeValid) {
-      newErrors.closeDateTime = "Close date/time is required.";
+      newErrors.closeDateTime = "Close date and time are required.";
     }
     if (!endValid) {
-      newErrors.endDateTime = "End date/time is required.";
+      newErrors.endDateTime = "End date and time are required.";
     }
+
     if (closeValid && endValid) {
       const closeDateTime = new Date(`${bet.closeDate}T${bet.closeTime}Z`);
       const endDateTime = new Date(`${bet.endDate}T${bet.endTime}Z`);
       if (endDateTime <= closeDateTime) {
-        newErrors.endDateTime = "End DateTime must be after Close DateTime.";
+        newErrors.endDateTime = "End Date/Time must be after Close Date/Time.";
       }
     }
-    // Verify Close DateTime is at least 1 hour in the future
+
+    // Ensure Close Date/Time is at least 1 hour in the future
     if (closeValid) {
       const closeDateTime = new Date(`${bet.closeDate}T${bet.closeTime}Z`);
       const minCloseDateTime = new Date(Date.now() + 60 * 60 * 1000);
       if (closeDateTime <= minCloseDateTime) {
         newErrors.closeDateTime =
-          "Close DateTime must be at least 1 hour in the future.";
+          "Close Date/Time must be at least 1 hour in the future.";
       }
     }
 
-    // Options : min 2, max 8, each <= 32 chars
-    if (bet.options.length < 2) {
+    // Options: minimum 2, maximum 8, each <= 32 characters
+    const trimmedOptions = bet.options.map((opt) => opt.trim());
+    const optionSet = new Set(trimmedOptions);
+    if (trimmedOptions.length < 2) {
       newErrors.options = "At least 2 options are required.";
+    } else if (optionSet.size !== trimmedOptions.length) {
+      newErrors.options = "All options must be unique.";
     } else {
-      for (let opt of bet.options) {
-        if (!opt || opt.trim() === "") {
-          newErrors.options = "All options must be non-empty.";
+      for (let opt of trimmedOptions) {
+        if (!opt) {
+          newErrors.options = "Options cannot be empty.";
           break;
         }
         if (opt.length > 32) {
@@ -192,17 +234,23 @@ function BetCreatePage() {
       }
     }
 
-    // Providers : min 1, max 8, publicId(60 chars) + fee >= 0
+    // Providers: minimum 1, maximum 8, publicId (60 characters) + fee >= 0
     if (bet.providers.length < 1) {
       newErrors.providers = "At least 1 provider is required.";
     } else {
-      for (let p of bet.providers) {
-        if (!p.publicId || p.publicId.length !== 60) {
-          newErrors.providers = "Each provider must have a 60-char publicId.";
+      for (let provider of bet.providers) {
+        if (!provider.publicId || provider.publicId.length !== 60) {
+          newErrors.providers =
+            "Each provider must have a 60-character public ID.";
           break;
         }
-        if (!p.fee || isNaN(Number(p.fee)) || Number(p.fee) < 0) {
-          newErrors.providers = "Each provider must have a valid fee (>=0).";
+        if (
+          provider.fee === "" ||
+          isNaN(Number(provider.fee)) ||
+          Number(provider.fee) < 0
+        ) {
+          newErrors.providers =
+            "Each provider must have a valid fee (0 or higher).";
           break;
         }
       }
@@ -214,10 +262,12 @@ function BetCreatePage() {
       isNaN(Number(bet.amountPerSlot)) ||
       Number(bet.amountPerSlot) < minBetSlotAmount
     ) {
-      newErrors.amountPerSlot = `Amount per slot must be >= ${minBetSlotAmount}.`;
+      newErrors.amountPerSlot = `Amount per slot must be at least ${formatQubicAmount(
+        minBetSlotAmount
+      )} Qubics.`;
     }
 
-    // Max bet slots : 1 à 1024
+    // Max bet slots: between 1 and 1024
     if (
       !bet.maxBetSlots ||
       isNaN(Number(bet.maxBetSlots)) ||
@@ -232,7 +282,7 @@ function BetCreatePage() {
   };
 
   /**
-   * Form submission
+   * Handle form submission
    */
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -243,25 +293,25 @@ function BetCreatePage() {
       return;
     }
 
-    // Validation
+    // Validate form data
     if (!validateForm()) {
       return;
     }
 
-    // Close DateTime and End DateTime
+    // Calculate Date/Time differences
     const closeDateTime = new Date(`${bet.closeDate}T${bet.closeTime}Z`);
     const endDateTime = new Date(`${bet.endDate}T${bet.endTime}Z`);
     const diffHours = (endDateTime - closeDateTime) / (1000 * 60 * 60);
 
     if (diffHours <= 0) {
-      console.error("End DateTime must be after Close DateTime.");
+      console.error("End Date/Time must be after Close Date/Time.");
       return;
     }
 
     const creatorIdentity = await getCreatorIdentity();
 
     const firstPartHash = hashBetData(
-      betDescInput, // We hash the version entered by the user
+      betDescInput, // Hash the user-entered description
       creatorIdentity,
       bet.providers.map((p) => p.publicId),
       bet.options
@@ -274,10 +324,10 @@ function BetCreatePage() {
     const finalHash = `${firstPartHash}${secondPartHash}`;
     const betDescriptionReference = `###${finalHash}`;
 
-    // Description upload 
+    // Upload description
     const uploadSuccess = await uploadDescription(betDescInput, finalHash);
     if (!uploadSuccess) {
-      console.error("Failed to upload description");
+      showSnackbar("Failed to upload description.", "error");
       return;
     }
 
@@ -297,18 +347,20 @@ function BetCreatePage() {
       await fetchBalance(walletPublicIdentity);
     }
 
-    // Verify balance
+    // Check if the user has enough balance to create the bet
     if (balance !== null && BigInt(balance) < BigInt(betCreationFee)) {
       showSnackbar(
         `You do not have enough balance to create this bet. Your balance: ${formatQubicAmount(
           balance
-        )} Qubic. Bet creation fee: ${formatQubicAmount(betCreationFee)} Qubic.`,
+        )} Qubic. Bet creation fee: ${formatQubicAmount(
+          betCreationFee
+        )} Qubic.`,
         "error"
       );
       return;
     }
 
-    // Bet data to send
+    // Prepare bet data to send
     const constructedBet = {
       ...betCopy,
       description: betDescriptionReference,
@@ -318,7 +370,6 @@ function BetCreatePage() {
     setBetToSend(constructedBet);
     setShowConfirmTxModal(true);
 
-    console.log("Valid Bet :", constructedBet);
   };
 
   /**
@@ -331,20 +382,21 @@ function BetCreatePage() {
   };
 
   /**
-   * Dynamically manage options
+   * Manage bet options dynamically
    */
   const addOption = () => {
     if (bet.options.length < 8) {
       setBet({ ...bet, options: [...bet.options, ""] });
     }
   };
+
   const removeOption = (index) => {
     const newOptions = bet.options.filter((_, i) => i !== index);
     setBet({ ...bet, options: newOptions });
   };
 
   /**
-   * Dynamically manage providers
+   * Manage providers dynamically
    */
   const addProvider = () => {
     if (bet.providers.length < 8) {
@@ -354,13 +406,14 @@ function BetCreatePage() {
       });
     }
   };
+
   const removeProvider = (index) => {
     const newProviders = bet.providers.filter((_, i) => i !== index);
     setBet({ ...bet, providers: newProviders });
   };
 
   /**
-   * Min End Date/Time (1h after Close Date/Time)
+   * Calculate minimum End Date/Time (1 hour after Close Date/Time)
    */
   const calculateMinEndDateTime = () => {
     if (!bet.closeDate || !bet.closeTime) return null;
@@ -373,12 +426,13 @@ function BetCreatePage() {
     const minTime = isoString.split("T")[1].slice(0, 5);
     return { date: minDate, time: minTime };
   };
+
   const minEnd = calculateMinEndDateTime();
 
   return (
     <Container
-      maxWidth="md"
-      sx={{ mt: theme.spacing(10), mb: theme.spacing(4) }}
+      maxWidth='md'
+      sx={{ mt: theme.spacing(12), mb: theme.spacing(4) }}
     >
       <Paper
         elevation={0}
@@ -389,52 +443,74 @@ function BetCreatePage() {
             md: theme.palette.background.paper,
           },
           borderRadius: 1,
-          border: {
-            md: `1px solid ${theme.palette.secondary.main}`,
-            xs: "none",
-          },
+          // border: {
+          //   md: `1px solid ${theme.palette.secondary.main}`,
+          //   xs: "none",
+          // },
         }}
       >
-        {/* HEADER */}
-        <Box display="flex" alignItems="center" mb={3}>
+        {/* Header */}
+        <Box
+          display='flex'
+          alignItems='center'
+          justifyContent='space-between'
+          mb={3}
+        >
+          <Box display='flex' alignItems='center'>
+            <IconButton
+              aria-label='go back'
+              onClick={() => navigate("/")}
+              sx={{ mr: 2 }}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+            <Typography variant='h5' color='text.primary' fontWeight={500}>
+              Create New Bet
+            </Typography>
+          </Box>
+
+          {/* Button to open the tutorial */}
           <IconButton
-            aria-label="go back"
-            onClick={() => navigate("/")}
-            sx={{ mr: 2 }}
+            onClick={() => setShowTutorial(true)}
+            color='primary'
+            aria-label='help'
           >
-            <ArrowBackIcon />
+            <HelpOutlineIcon />
           </IconButton>
-          <Typography variant="h5" color="text.primary" fontWeight="bold">
-            Create New Bet
-          </Typography>
         </Box>
 
         <Divider sx={{ mb: theme.spacing(4) }} />
 
-        {/* FORM */}
+        {/* Form */}
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
             {/* Description */}
             <Grid item xs={12}>
               <LabelWithPopover
-                label="Bet Description"
-                description="This is the bet description with a maximum of 100 characters."
+                label='Bet Description'
+                description='Provide a brief description of the bet (max 100 characters).'
                 required
               />
               <TextField
                 fullWidth
-                variant="outlined"
+                label='Description'
+                variant='outlined'
                 value={betDescInput}
                 onChange={(e) => setBetDescInput(e.target.value)}
-                placeholder="Enter bet description"
+                placeholder='Enter bet description'
                 error={Boolean(errors.description)}
-                helperText={errors.description}
                 sx={{
                   mt: 1,
                   backgroundColor: theme.palette.background.default,
                 }}
+                inputProps={{ maxLength: 100 }}
               />
-              <Typography variant="body2" align="right" color="text.secondary">
+              {errors.description && (
+                <Alert severity='error' sx={{ mt: 1 }}>
+                  {errors.description}
+                </Alert>
+              )}
+              <Typography variant='body2' align='right' color='text.secondary'>
                 {betDescInput.length}/100
               </Typography>
             </Grid>
@@ -442,14 +518,14 @@ function BetCreatePage() {
             {/* Close Date/Time */}
             <Grid item xs={12} md={6}>
               <LabelWithPopover
-                label="Close Date and Time (UTC)"
-                description="The date/time when the bet closes."
+                label='Close Date and Time (UTC)'
+                description='Specify when the betting closes.'
                 required
               />
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Box display="flex" gap={2} mt={1}>
+                <Box display='flex' gap={2} mt={1}>
                   <DatePicker
-                    label="Close Date"
+                    label='Close Date'
                     value={bet.closeDate ? dayjs(bet.closeDate) : null}
                     onChange={(newValue) =>
                       setBet({
@@ -459,41 +535,47 @@ function BetCreatePage() {
                           : "",
                       })
                     }
-                    minDate={dayjs()}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: Boolean(errors.closeDateTime),
-                        sx: {
-                          backgroundColor: theme.palette.background.default,
-                        },
-                      },
-                      openPickerButton: {
-                        sx: { color: theme.palette.primary.main },
+                    sx={{
+                      "& .MuiSvgIcon-root": {
+                        color: theme.palette.primary.main,
                       },
                     }}
+                    minDate={dayjs()}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        fullWidth
+                        error={Boolean(errors.closeDateTime)}
+                        sx={{
+                          backgroundColor: theme.palette.background.default,
+                        }}
+                      />
+                    )}
                   />
                   <TimePicker
-                    label="Close Time"
-                    value={bet.closeTime ? dayjs(bet.closeTime, "HH:mm") : null}
+                    label='Close Time'
+                    value={bet.closeTime ? dayjs(bet.closeTime, "HH:MM") : null}
                     onChange={(newValue) =>
                       setBet({
                         ...bet,
-                        closeTime: newValue ? newValue.format("HH:mm") : "",
+                        closeTime: newValue ? newValue.format("HH:MM") : "",
                       })
                     }
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: Boolean(errors.closeDateTime),
-                        sx: {
-                          backgroundColor: theme.palette.background.default,
-                        },
-                      },
-                      openPickerButton: {
-                        sx: { color: theme.palette.primary.main },
+                    sx={{
+                      "& .MuiSvgIcon-root": {
+                        color: theme.palette.primary.main,
                       },
                     }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        fullWidth
+                        error={Boolean(errors.closeDateTime)}
+                        sx={{
+                          backgroundColor: theme.palette.background.default,
+                        }}
+                      />
+                    )}
                   />
                 </Box>
               </LocalizationProvider>
@@ -502,14 +584,14 @@ function BetCreatePage() {
             {/* End Date/Time */}
             <Grid item xs={12} md={6}>
               <LabelWithPopover
-                label="End Date and Time (UTC)"
-                description="The date/time when providers can publish results."
+                label='End Date and Time (UTC)'
+                description='Specify when providers can publish results.'
                 required
               />
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Box display="flex" gap={2} mt={1}>
+                <Box display='flex' gap={2} mt={1}>
                   <DatePicker
-                    label="End Date"
+                    label='End Date'
                     value={bet.endDate ? dayjs(bet.endDate) : null}
                     onChange={(newValue) =>
                       setBet({
@@ -517,52 +599,59 @@ function BetCreatePage() {
                         endDate: newValue ? newValue.format("YYYY-MM-DD") : "",
                       })
                     }
-                    minDate={minEnd?.date ? dayjs(minEnd.date) : null}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: Boolean(errors.endDateTime),
-                        sx: {
-                          backgroundColor: theme.palette.background.default,
-                        },
-                      },
-                      openPickerButton: {
-                        sx: { color: theme.palette.primary.main },
+                    sx={{
+                      "& .MuiSvgIcon-root": {
+                        color: theme.palette.primary.main,
                       },
                     }}
+                    minDate={minEnd?.date ? dayjs(minEnd.date) : null}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        fullWidth
+                        error={Boolean(errors.endDateTime)}
+                        sx={{
+                          backgroundColor: theme.palette.background.default,
+                        }}
+                      />
+                    )}
                   />
                   <TimePicker
-                    label="End Time"
-                    value={bet.endTime ? dayjs(bet.endTime, "HH:mm") : null}
+                    label='End Time'
+                    value={bet.endTime ? dayjs(bet.endTime, "HH:MM") : null}
                     onChange={(newValue) =>
                       setBet({
                         ...bet,
-                        endTime: newValue ? newValue.format("HH:mm") : "",
+                        endTime: newValue ? newValue.format("HH:MM") : "",
                       })
                     }
-                    minTime={minEnd?.time ? dayjs(minEnd.time, "HH:mm") : null}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: Boolean(errors.endDateTime),
-                        sx: {
-                          backgroundColor: theme.palette.background.default,
-                        },
-                      },
-                      openPickerButton: {
-                        sx: { color: theme.palette.primary.main },
+                    sx={{
+                      "& .MuiSvgIcon-root": {
+                        color: theme.palette.primary.main,
                       },
                     }}
+                    minTime={
+                      minEnd?.time ? dayjs(minEnd.time, "HH:MM") : undefined
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        fullWidth
+                        error={Boolean(errors.endDateTime)}
+                        sx={{
+                          backgroundColor: theme.palette.background.default,
+                        }}
+                      />
+                    )}
                   />
                 </Box>
               </LocalizationProvider>
             </Grid>
 
-            {/* Date / Time Error */}
+            {/* Date/Time Error */}
             {(errors.closeDateTime || errors.endDateTime) && (
               <Grid item xs={12}>
-                <Alert severity="error" sx={{ mt: -2 }}>
-                  <AlertTitle>Date/Time Error</AlertTitle>
+                <Alert severity='error' sx={{ mt: -2 }}>
                   {errors.closeDateTime && <div>{errors.closeDateTime}</div>}
                   {errors.endDateTime && <div>{errors.endDateTime}</div>}
                 </Alert>
@@ -572,40 +661,47 @@ function BetCreatePage() {
             {/* Options */}
             <Grid item xs={12}>
               <LabelWithPopover
-                label="Bet Options (min. 2)"
-                description="Add up to 8 options, each <= 32 chars."
+                label='Bet Options (min. 2)'
+                description='Add between 2 to 8 options, each up to 32 characters.'
                 required
               />
               {bet.options.map((opt, index) => (
                 <Box
                   key={index}
-                  display="flex"
-                  alignItems="center"
+                  display='flex'
+                  alignItems='center'
                   gap={1}
                   mt={1}
                 >
                   <TextField
                     fullWidth
-                    variant="outlined"
+                    variant='outlined'
                     value={opt}
                     onChange={(e) => {
-                      const newOpts = [...bet.options];
-                      newOpts[index] = e.target.value;
-                      setBet({ ...bet, options: newOpts });
+                      const newOptions = [...bet.options];
+                      newOptions[index] = e.target.value;
+                      setBet({ ...bet, options: newOptions });
                     }}
                     error={Boolean(errors.options)}
                     sx={{ backgroundColor: theme.palette.background.default }}
+                    inputProps={{ maxLength: 32 }}
                   />
                   {bet.options.length > 2 && (
                     <IconButton
-                      color="error"
+                      color='error'
                       onClick={() => removeOption(index)}
+                      aria-label='Remove option'
                     >
                       <Close />
                     </IconButton>
                   )}
                 </Box>
               ))}
+              {errors.options && (
+                <Alert severity='error' sx={{ mt: 2 }}>
+                  {errors.options}
+                </Alert>
+              )}
               {bet.options.length < 8 && (
                 <Button
                   startIcon={<AddCircleOutline />}
@@ -621,75 +717,92 @@ function BetCreatePage() {
                   Add Option
                 </Button>
               )}
-              {errors.options && (
-                <Alert severity="error" sx={{ mt: 2 }}>
-                  {errors.options}
-                </Alert>
-              )}
             </Grid>
 
             {/* Providers */}
             <Grid item xs={12}>
               <LabelWithPopover
-                label="Oracle Providers"
-                description="List providers (60-char publicId) and their fees."
+                label='Oracle Providers'
+                description='List providers with their 60-character public ID and fees.'
                 required
               />
-              {bet.providers.map((p, index) => (
+              {bet.providers.map((provider, index) => (
                 <Box
                   key={index}
-                  display="flex"
-                  alignItems="center"
-                  gap={1}
+                  display='flex'
+                  alignItems='flex-start'
+                  gap={2}
                   mt={1}
                 >
+                  {/* Provider Public ID Field */}
                   <TextField
-                    label="Provider PublicId"
-                    placeholder="60-char ID"
-                    variant="outlined"
-                    value={p.publicId}
+                    label='Provider Public ID'
+                    placeholder='60-character ID (A-Z)'
+                    variant='outlined'
+                    value={provider.publicId}
                     onChange={(e) => {
-                      const newProv = [...bet.providers];
-                      newProv[index].publicId = e.target.value;
-                      setBet({ ...bet, providers: newProv });
+                      const value = e.target.value
+                        .toUpperCase()
+                        .replace(/[^A-Z]/g, "");
+                      const newProviders = [...bet.providers];
+                      newProviders[index].publicId = value;
+                      setBet({ ...bet, providers: newProviders });
                     }}
                     error={Boolean(errors.providers)}
                     sx={{
                       flex: 3,
-                      backgroundColor: theme.palette.background.default,
+                      "& .MuiOutlinedInput-root": {
+                        backgroundColor: theme.palette.background.default,
+                      },
                     }}
+                    inputProps={{ maxLength: 60 }}
                   />
+
+                  {/* Fee Field */}
                   <TextField
-                    label="Fee (%)"
-                    variant="outlined"
-                    type="number"
-                    value={p.fee}
+                    label='Fee (%)'
+                    variant='outlined'
+                    type='number'
+                    value={provider.fee}
                     onChange={(e) => {
-                      const newProv = [...bet.providers];
-                      newProv[index].fee = e.target.value;
-                      setBet({ ...bet, providers: newProv });
+                      const newProviders = [...bet.providers];
+                      newProviders[index].fee = e.target.value;
+                      setBet({ ...bet, providers: newProviders });
                     }}
                     InputProps={{
                       endAdornment: (
-                        <InputAdornment position="end"></InputAdornment>
+                        <InputAdornment position='end'>%</InputAdornment>
                       ),
                     }}
                     error={Boolean(errors.providers)}
                     sx={{
                       flex: 1,
-                      backgroundColor: theme.palette.background.default,
+                      "& .MuiOutlinedInput-root": {
+                        backgroundColor: theme.palette.background.default,
+                      },
                     }}
                   />
+
+                  {/* Remove Button */}
                   {bet.providers.length > 1 && (
                     <IconButton
-                      color="error"
+                      color='error'
                       onClick={() => removeProvider(index)}
+                      aria-label='Remove provider'
+                      sx={{
+                        alignSelf: "center",
+                      }}
                     >
                       <Close />
                     </IconButton>
                   )}
                 </Box>
               ))}
+              {errors.providers && (
+                <Alert severity='error' sx={{ mt: 2 }}>
+                  {errors.providers}
+                </Alert>
+              )}
               {bet.providers.length < 8 && (
                 <Button
                   startIcon={<AddCircleOutline />}
@@ -705,73 +818,127 @@ function BetCreatePage() {
                   Add Provider
                 </Button>
               )}
-              {errors.providers && (
-                <Alert severity="error" sx={{ mt: 2 }}>
-                  {errors.providers}
-                </Alert>
-              )}
             </Grid>
 
             {/* Amount per slot */}
             <Grid item xs={12} md={6}>
               <LabelWithPopover
-                label="Amount of Qubics per Slot"
-                description={`Min amount is ${formatQubicAmount(
+                label='Amount of Qubics per Slot'
+                description={`Minimum amount is ${formatQubicAmount(
                   minBetSlotAmount
-                )} qubics.`}
+                )} Qubics.`}
                 required
               />
               <TextField
                 fullWidth
-                type="number"
-                value={bet.amountPerSlot}
-                onChange={(e) =>
-                  setBet({ ...bet, amountPerSlot: e.target.value })
+                type='text'
+                value={
+                  bet.amountPerSlot
+                    ? Number(bet.amountPerSlot).toLocaleString("en-US")
+                    : ""
                 }
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/,/g, "");
+                  if (/^\d*$/.test(rawValue)) {
+                    setBet({ ...bet, amountPerSlot: rawValue });
+                  }
+                }}
                 error={Boolean(errors.amountPerSlot)}
-                helperText={errors.amountPerSlot}
                 sx={{
                   mt: 1,
                   backgroundColor: theme.palette.background.default,
                 }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position='end'>Qubics</InputAdornment>
+                  ),
+                }}
               />
+              {errors.amountPerSlot && (
+                <Alert severity='error' sx={{ mt: 1 }}>
+                  {errors.amountPerSlot}
+                </Alert>
+              )}
             </Grid>
 
             {/* Max bet slots */}
             <Grid item xs={12} md={6}>
               <LabelWithPopover
-                label="Max Number of Bet Slots"
-                description="Up to 1024 slots per option."
+                label='Max Number of Bet Slots'
+                description='Up to 1024 slots per option.'
                 required
               />
               <TextField
                 fullWidth
-                type="number"
+                type='number'
                 value={bet.maxBetSlots}
                 onChange={(e) =>
                   setBet({ ...bet, maxBetSlots: e.target.value })
                 }
                 error={Boolean(errors.maxBetSlots)}
-                helperText={errors.maxBetSlots}
                 sx={{
                   mt: 1,
                   backgroundColor: theme.palette.background.default,
                 }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position='end'>Slots</InputAdornment>
+                  ),
+                }}
               />
+              {errors.maxBetSlots && (
+                <Alert severity='error' sx={{ mt: 1 }}>
+                  {errors.maxBetSlots}
+                </Alert>
+              )}
+            </Grid>
+            <Grid item xs={12}>
+              <Typography
+                variant='subtitle1'
+                display='flex'
+                alignItems='center'
+                justifyContent='flex-end'
+              >
+                Bet creation fees:{" "}
+                {theme.palette.mode === "dark" ? (
+                  <QubicSymbolWhite
+                    style={{
+                      fill: theme.palette.secondary.main,
+                      width: "0.8rem",
+                      height: "0.8rem",
+                      marginLeft: "0.3rem",
+                      marginRight: "0.3rem",
+                    }}
+                  />
+                ) : (
+                  <QubicSymbol
+                    style={{
+                      fill: theme.palette.secondary.main,
+                      width: "0.8rem",
+                      height: "0.8rem",
+                      marginLeft: "0.3rem",
+                      marginRight: "0.3rem",
+                    }}
+                  />
+                )}
+                {betCreationFee !== null
+                  ? `${formatQubicAmount(betCreationFee)} QUBIC`
+                  : "Loading..."}
+              </Typography>
             </Grid>
           </Grid>
 
-          <Box mt={4} display="flex" justifyContent="center">
+          <Box mt={4} display='flex' justifyContent='center'>
             <Button
-              variant="outlined"
-              color="primary"
-              type="submit"
-              size="large"
+              variant='outlined'
+              color='primary'
+              type='submit'
+              size='large'
               startIcon={<RocketLaunchIcon />}
             >
               <Typography
-                variant="button"
-                sx={{ fontWeight: "bold", fontSize: "0.9rem" }}
+                variant='button'
+                sx={{ fontWeight: 700, fontSize: "0.9rem" }}
               >
                 Create Bet
               </Typography>
@@ -780,6 +947,7 @@ function BetCreatePage() {
         </form>
       </Paper>
 
+      {/* Confirmation Modal */}
       <ConfirmTxModal
         open={showConfirmTxModal}
         onClose={() => {
@@ -787,7 +955,7 @@ function BetCreatePage() {
           setShowConfirmTxModal(false);
         }}
         descriptionData={{
-          description: betDescInput, // Displayed the user's description (not hashed)
+          description: betDescInput, // Display the user's description (not hashed)
           closeDate: bet.closeDate,
           closeTime: bet.closeTime,
           endDate: bet.endDate,
@@ -796,17 +964,54 @@ function BetCreatePage() {
           providers: bet.providers,
           amountPerSlot: bet.amountPerSlot,
           maxBetSlots: bet.maxBetSlots,
+          betCreationFee: betCreationFee,
         }}
         tx={{
-          description: "Confirm to proceed ?",
+          description: "Are you sure you want to create this bet ?",
         }}
         onConfirm={async () => {
-          // We send betToSend (which contains the hashed description)
+          // Send betToSend (which contains the hashed description)
           return await signIssueBetTx(betToSend);
         }}
         onTransactionComplete={handleTransactionComplete}
         isCreate={true}
       />
+      <Dialog
+        open={showTutorial}
+        onClose={() => setShowTutorial(false)}
+        fullWidth
+        fullScreen={window.innerWidth < 600}
+        maxWidth='md'
+        sx={{
+          "& .MuiPaper-root": {
+            backgroundColor: theme.palette.background.default,
+          },
+        }}
+      >
+        <DialogTitle>
+          How to Create Your Bet (Tutorial)
+          <IconButton
+            aria-label='close'
+            onClick={() => setShowTutorial(false)}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+              backgroundColor: theme.palette.background.default,
+            }}
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            backgroundColor: theme.palette.background.default,
+          }}
+        >
+          <BetCreationTutorial />
+        </DialogContent>
+      </Dialog>
     </Container>
   );
 }

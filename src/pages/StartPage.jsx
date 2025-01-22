@@ -149,7 +149,6 @@ function StartPage() {
         gap: 2,
       }}
     >
-      {console.log('loading')}
       <AnimatedBars />
       <Typography
         variant='h6'
@@ -207,12 +206,12 @@ function StartPage() {
         <Box
           component='header'
           sx={{
-            display: 'flex', // Utilisation de Flexbox
-            flexDirection: 'column', // Orientation verticale
-            alignItems: 'center', // Centrage horizontal
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
             mb: { xs: 4, sm: 5, md: 6 },
             mt: { xs: -2, sm: -3, md: -5 },
-            textAlign: 'center', // Maintien du centrage du texte
+            textAlign: 'center',
           }}
         >
           <Typography
@@ -297,7 +296,7 @@ function StartPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              borderRadius: 2,
+              borderRadius: 10,
               boxShadow: theme.shadows[1],
               color: theme.palette.primary.contrastText,
               '&:focus': {
@@ -440,17 +439,6 @@ function StartPage() {
           renderLoading()
         ) : (
           <Box sx={{ mb: { xs: 4, sm: 5, md: 6 } }}>
-            {/* <Typography
-              variant="h5"
-              textAlign="center"
-              fontWeight="bold"
-              gutterBottom
-              color="text.primary"
-              sx={{ mb: { xs: 2, sm: 3 } }}
-            >
-              Listing All Bets
-            </Typography> */}
-
             {viewMode === 'table' && isDesktop ? (
               <BetOverviewTable
                 bets={betsToDisplay}

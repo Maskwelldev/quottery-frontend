@@ -23,8 +23,8 @@ const TableRowItem = ({ icon, label, children }) => {
   return (
     <TableRow>
       <TableCell
-        component="th"
-        scope="row"
+        component='th'
+        scope='row'
         sx={{
           display: "flex",
           alignItems: "center",
@@ -86,28 +86,28 @@ const BetCreateConfirm = ({ bet }) => {
           <TableBody>
             <TableRowItem
               // icon={<DescriptionIcon fontSize="small" />}
-              label="Description"
+              label='Description'
             >
               {bet.descriptionFull}
             </TableRowItem>
 
             <TableRowItem
               // icon={<EventIcon fontSize="small" />}
-              label="Closing Date & Time"
+              label='Closing Date & Time'
             >
               {bet.closeDateTime.date} {bet.closeDateTime.time}
             </TableRowItem>
 
             <TableRowItem
               // icon={<EventIcon fontSize="small" />}
-              label="End Date & Time"
+              label='End Date & Time'
             >
               {bet.endDateTime.date} {bet.endDateTime.time}
             </TableRowItem>
 
             <TableRowItem
               // icon={<StorageIcon fontSize="small" />}
-              label="Options"
+              label='Options'
             >
               <List dense sx={{ listStyleType: "disc", pl: 2, m: 0 }}>
                 {bet.options.map((option, idx) => (
@@ -120,7 +120,7 @@ const BetCreateConfirm = ({ bet }) => {
 
             <TableRowItem
               // icon={<StorageIcon fontSize="small" />}
-              label="Oracle Providers"
+              label='Oracle Providers'
             >
               <List dense sx={{ listStyleType: "disc", pl: 2, m: 0 }}>
                 {bet.providers.map((provider, idx) => (
@@ -137,21 +137,21 @@ const BetCreateConfirm = ({ bet }) => {
 
             <TableRowItem
               // icon={<AccountBalanceIcon fontSize="small" />}
-              label="Qus Per Slot"
+              label='Qus Per Slot'
             >
               {bet.amountPerSlot.toLocaleString()} QUBIC
             </TableRowItem>
 
             <TableRowItem
               // icon={<AccountBalanceIcon fontSize="small" />}
-              label="Max Slots Per Option"
+              label='Max Slots Per Option'
             >
               {bet.maxBetSlots}
             </TableRowItem>
 
             <TableRowItem
               // icon={<AccountBalanceIcon fontSize="small" />}
-              label="Creation Fees"
+              label='Creation Fees'
             >
               {bet.costs.toLocaleString()} QUBIC
             </TableRowItem>
@@ -159,13 +159,13 @@ const BetCreateConfirm = ({ bet }) => {
             {balance !== null && (
               <TableRowItem
                 // icon={<AccountBalanceIcon fontSize="small" />}
-                label="Your Balance"
+                label='Your Balance'
               >
-                <Typography variant="body2">
+                <Typography variant='body2'>
                   {formatQubicAmount(balance)} QUBIC
                 </Typography>
                 {!hasEnoughBalance && (
-                  <Alert severity="error" sx={{ mt: 1 }}>
+                  <Alert severity='error' sx={{ mt: 1 }}>
                     Insufficient balance to create this bet. Your balance:{" "}
                     {formatQubicAmount(balance)} QUBIC, creation fees:{" "}
                     {formatQubicAmount(bet.costs)} QUBIC.

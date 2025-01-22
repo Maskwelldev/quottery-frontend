@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Paper,
   Typography,
@@ -10,12 +10,12 @@ import {
   ListItemIcon,
   ListItemText,
   useMediaQuery,
-} from '@mui/material';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import GamesIcon from '@mui/icons-material/Games';
-import { formatQubicAmount } from './qubic/util';
+} from "@mui/material";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import DoneOutlineIcon from "@mui/icons-material/DoneOutline";
+import ViewModuleIcon from "@mui/icons-material/ViewModule";
+import GamesIcon from "@mui/icons-material/Games";
+import { formatQubicAmount } from "./qubic/util";
 
 const BetDetails = ({
   title,
@@ -24,35 +24,35 @@ const BetDetails = ({
   optionCosts,
 }) => {
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const details = [
     {
-      icon: <GamesIcon color="action" />,
-      label: 'Bet on',
+      icon: <GamesIcon color='action' />,
+      label: "Bet on",
       value: title,
     },
     {
-      icon: <DoneOutlineIcon color="action" />,
-      label: 'Option',
+      icon: <DoneOutlineIcon color='action' />,
+      label: "Option",
       value: betOptionDescription,
     },
     {
-      icon: <ViewModuleIcon color="action" />,
-      label: 'Slots',
+      icon: <ViewModuleIcon color='action' />,
+      label: "Slots",
       value: amountOfBetSlots,
     },
   ];
 
   return (
-    <Paper elevation={0} sx={{ mt: 1 }}>
+    <Paper elevation={0} sx={{ mt: 1, backgroundColor: 'inherit' }}>
       <Stack spacing={0}>
         <Typography
-          variant={isSmallScreen ? 'body1' : 'h7'}
+          variant={isSmallScreen ? "body1" : "h7"}
           sx={{
             fontWeight: 500,
             color: theme.palette.text.secondary,
-            textAlign: 'start',
+            textAlign: "start",
           }}
         >
           Bet Details :
@@ -66,7 +66,7 @@ const BetDetails = ({
                 <ListItemText
                   primary={
                     <Typography
-                      variant="body2"
+                      variant='body2'
                       sx={{
                         fontWeight: 500,
                         color: theme.palette.text.secondary,
@@ -77,7 +77,7 @@ const BetDetails = ({
                   }
                   secondary={
                     <Typography
-                      variant="body2"
+                      variant='body2'
                       sx={{
                         fontWeight: 500,
                         color: theme.palette.text.primary,
@@ -96,12 +96,12 @@ const BetDetails = ({
 
           <ListItem disableGutters>
             <ListItemIcon sx={{ minWidth: 40 }}>
-              <AccountBalanceWalletIcon color="action" />
+              <AccountBalanceWalletIcon color='action' />
             </ListItemIcon>
             <ListItemText
               primary={
                 <Typography
-                  variant="body2"
+                  variant='body2'
                   sx={{
                     color: theme.palette.text.secondary,
                   }}
@@ -111,14 +111,14 @@ const BetDetails = ({
               }
               secondary={
                 <Typography
-                  variant="body2"
+                  variant='body2'
                   sx={{
                     fontWeight: 500,
                     color: theme.palette.text.main,
                   }}
                 >
                   {`${
-                    optionCosts ? formatQubicAmount(optionCosts) : '0'
+                    optionCosts ? formatQubicAmount(optionCosts) : "0"
                   } QUBIC`}
                 </Typography>
               }
