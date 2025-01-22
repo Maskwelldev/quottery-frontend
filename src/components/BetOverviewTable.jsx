@@ -450,7 +450,7 @@ function BetOverviewTable({ bets, onRowClick, loading }) {
               pageSize: 10,
             },
           }}
-          paginationMode="client"
+          paginationMode='client'
           pageSizeOptions={[10, 25, 50, 100]}
           onRowClick={(params) => onRowClick(params.row.bet_id)}
         />

@@ -1,4 +1,3 @@
-// Work in progress
 import React, { useEffect, useState } from "react";
 import {
   Typography,
@@ -13,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 import BetOverviewTable from "../components/BetOverviewTable";
 import BetOverviewCard from "../components/BetOverviewCard";
 import { useQuotteryContext } from "../contexts/QuotteryContext";
-// import { fetchBetsForParticipant } from "../components/qubic/util/betApi";
 import ActiveIcon from "@mui/icons-material/CheckCircle";
 import HistoryIcon from "@mui/icons-material/History";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -31,8 +29,6 @@ const UserBets = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
 
-  const [betsParticipated, setBetsParticipated] = useState([]);
-  const [loadingParticipated, setLoadingParticipated] = useState(true);
   const [copied, setCopied] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -44,26 +40,6 @@ const UserBets = () => {
     if (!activeBets.length && !historicalBets.length) {
       fetchBets("all");
     }
-
-    // Fetch bets participated by the user
-    // if (walletPublicIdentity) {
-    //   const fetchParticipatedBets = async () => {
-    //     try {
-    //       const participatedBets = await fetchBetsForParticipant(
-    //         process.env.REACT_APP_HTTP_ENDPOINT,
-    //         process.env.REACT_APP_BACKEND_URL,
-    //         walletPublicIdentity
-    //       );
-    //       setBetsParticipated(participatedBets);
-    //     } catch (error) {
-    //       console.error("Error fetching participated bets:", error);
-    //     } finally {
-    //       setLoadingParticipated(false);
-    //     }
-    //   };
-
-    //   fetchParticipatedBets();
-    // }
   }, [walletPublicIdentity, fetchBets, activeBets, historicalBets]);
 
   const handleBetClick = (betId) => {
@@ -167,11 +143,7 @@ const UserBets = () => {
     </Box>
   );
 
-  if (
-    !annotatedActiveBets.length &&
-    !annotatedHistoricalBets.length &&
-    loadingParticipated
-  ) {
+  if (!annotatedActiveBets.length && !annotatedHistoricalBets.length) {
     return (
       <Box textAlign='center' mt={8}>
         <Typography
@@ -215,7 +187,7 @@ const UserBets = () => {
             }}
           >
             {truncateMiddle(walletPublicIdentity, 40)}
-            <Tooltip title="Copy Public ID">
+            <Tooltip title='Copy Public ID'>
               <IconButton
                 onClick={copyToClipboard}
                 size='small'
@@ -224,7 +196,7 @@ const UserBets = () => {
                     ? theme.palette.success.main
                     : theme.palette.text.secondary,
                 }}
-                aria-label="Copy Public ID"
+                aria-label='Copy Public ID'
               >
                 {copied ? (
                   <CheckCircleIcon fontSize='small' />
@@ -264,25 +236,6 @@ const UserBets = () => {
           </Typography>
         )}
       </Box>
-
-      {/* <Box mb={4}>
-        <BetsHeader
-          icon={<ActiveIcon fontSize={isMobile ? "small" : "inherit"} />}
-          title='Participated Bets'
-        />
-        {betsParticipated.length > 0 ? (
-          renderBets(
-            betsParticipated.map((bet) => ({
-              ...bet,
-              status: "participated",
-            }))
-          )
-        ) : (
-          <Typography variant={isMobile ? "body2" : "body1"}>
-            No participated bets found.
-          </Typography>
-        )}
-      </Box> */}
 
       <CustomSnackbar
         open={snackbar.open}
