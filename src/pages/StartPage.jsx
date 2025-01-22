@@ -148,7 +148,6 @@ function StartPage() {
         gap: 2,
       }}
     >
-      {console.log("loading")}
       <AnimatedBars />
       <Typography
         variant='h6'

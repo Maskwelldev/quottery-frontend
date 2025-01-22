@@ -11,8 +11,6 @@ const Footer = () => {
     return null;
   }
 
-  console.log(theme.palette.background.paper);
-
   return (
     <Box
       px={{ xs: 3, sm: 10, md: 15 }}

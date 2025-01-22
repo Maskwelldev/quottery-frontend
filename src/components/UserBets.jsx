@@ -151,6 +151,7 @@ const UserBets = () => {
           gutterBottom
           mt={12}
           mb={4}
+          px={2}
         >
           Loading bets, please wait...
         </Typography>

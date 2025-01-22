@@ -370,7 +370,6 @@ function BetCreatePage() {
     setBetToSend(constructedBet);
     setShowConfirmTxModal(true);
 
-    console.log("Valid Bet:", constructedBet);
   };
 
   /**
@@ -972,7 +971,6 @@ function BetCreatePage() {
         }}
         onConfirm={async () => {
           // Send betToSend (which contains the hashed description)
-          console.log("Données envoyées à l'API :", betToSend);
           return await signIssueBetTx(betToSend);
         }}
         onTransactionComplete={handleTransactionComplete}

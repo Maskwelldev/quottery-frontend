@@ -566,9 +566,9 @@ const ConnectModal = ({ open, onClose }) => {
               type='password'
               value={password}
               onChange={handlePasswordChange}
-              InputProps={{
-                style: { backgroundColor: theme.palette.background.paper },
-              }}
+              // InputProps={{
+              //   style: { backgroundColor: theme.palette.background.paper },
+              // }}
               autoComplete='new-password'
             />
             <Box display='flex' gap={2} mt={2} justifyContent={"center"}>
@@ -597,7 +597,7 @@ const ConnectModal = ({ open, onClose }) => {
         {/* "account-select" => Show seed selection */}
         {selectedWalletMode === "account-select" && (
           <Paper
-            elevation={2}
+            elevation={0}
             sx={{
               p: 2,
               backgroundColor: theme.palette.background.default,
@@ -624,7 +624,7 @@ const ConnectModal = ({ open, onClose }) => {
                 ))}
               </Select>
             </FormControl>
-            <Box display='flex' gap={2} mt={2}>
+            <Box display='flex' gap={2} mt={2} justifyContent={"center"}>
               <Button
                 variant='outlined'
                 size='large'
@@ -634,7 +634,7 @@ const ConnectModal = ({ open, onClose }) => {
                 }}
                 sx={{ fontWeight: 600 }}
               >
-                Lock Wallet
+                LOCK WALLET
               </Button>
               <Button
                 variant='contained'
@@ -643,7 +643,7 @@ const ConnectModal = ({ open, onClose }) => {
                 onClick={selectAccount}
                 sx={{ fontWeight: 600 }}
               >
-                Select Account
+                SELECT
               </Button>
             </Box>
           </Paper>
@@ -695,9 +695,9 @@ const ConnectModal = ({ open, onClose }) => {
                   placeholder='Enter HTTP Endpoint'
                   value={httpEndpointInput}
                   onChange={(e) => setHttpEndpointInput(e.target.value)}
-                  InputProps={{
-                    style: { backgroundColor: theme.palette.background.paper },
-                  }}
+                  // InputProps={{
+                  //   style: { backgroundColor: theme.palette.background.paper },
+                  // }}
                 />
                 <TextField
                   fullWidth
@@ -707,9 +707,9 @@ const ConnectModal = ({ open, onClose }) => {
                   placeholder='Enter Backend URL'
                   value={backendUrlInput}
                   onChange={(e) => setBackendUrlInput(e.target.value)}
-                  InputProps={{
-                    style: { backgroundColor: theme.palette.background.paper },
-                  }}
+                  // InputProps={{
+                  //   style: { backgroundColor: theme.palette.background.paper },
+                  // }}
                 />
                 {errorMsg && (
                   <Typography color='error' mt={1}>
