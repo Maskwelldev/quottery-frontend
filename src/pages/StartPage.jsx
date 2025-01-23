@@ -31,6 +31,9 @@ function StartPage() {
   const [viewMode, setViewMode] = useState('table');
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
+  const QTRY_ID =
+    'QTRYXGNQKHGZLBIUXQHZHGGQHVGAUTQUOFJDSJTOPFOGJWYZTTEGPFICWQBD';
+
   const {
     state,
     loading,
@@ -164,7 +167,13 @@ function StartPage() {
 
   const isLoadingOverall = loading || historicalLoading || isFilterLoading;
 
-  const betsToDisplay = annotateBetsWithStatus();
+  const betsToDisplayWithLottery = annotateBetsWithStatus();
+  const qtryBetId = betsToDisplayWithLottery.find(
+    (bet) => bet.creator === QTRY_ID
+  )?.bet_id;
+  const betsToDisplay = betsToDisplayWithLottery.filter(
+    (bet) => bet.creator !== QTRY_ID
+  );
 
   const cardVariants = {
     initial: {
@@ -328,7 +337,9 @@ function StartPage() {
             Create Bet
           </Button>
           <Button
-            onClick={() => navigate('/lottery/204')}
+            onClick={() =>
+              qtryBetId ? navigate(`/lottery/${qtryBetId}`) : null
+            }
             startIcon={<EmojiEventsIcon />}
             variant='contained'
             color={
