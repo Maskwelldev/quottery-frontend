@@ -167,11 +167,26 @@ function StartPage() {
 
   const isLoadingOverall = loading || historicalLoading || isFilterLoading;
 
-  const betsToDisplayWithLottery = annotateBetsWithStatus();
-  const qtryBetId = betsToDisplayWithLottery.find(
+  const lotteryBetsActiveLockedWaiting = [
+    ...state.activeBets.map((bet) => ({
+      ...bet,
+      status: 'active',
+    })),
+    ...state.lockedBets.map((bet) => ({
+      ...bet,
+      status: 'locked',
+    })),
+    ...state.waitingForResultsBets.map((bet) => ({
+      ...bet,
+      status: 'waiting',
+    })),
+  ];
+
+  const qtryBetId = lotteryBetsActiveLockedWaiting.find(
     (bet) => bet.creator === QTRY_ID
   )?.bet_id;
-  const betsToDisplay = betsToDisplayWithLottery.filter(
+
+  const betsToDisplay = annotateBetsWithStatus().filter(
     (bet) => bet.creator !== QTRY_ID
   );
 
